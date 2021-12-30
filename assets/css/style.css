@@ -1,11 +1,21 @@
+:root {
+    --blue: #5f9ea0;
+    --white: #e2e2e2;
+    --black: #1b1b1b;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* DOCUMENT SETUP & COLOR */
+
 body {
     height: 100vh;
+
+    background-color: var(--white);
 
     display: flex;
     flex-direction: column;
@@ -17,36 +27,37 @@ body {
 
 a {
     text-decoration: none;
-    color: white;
-}
-
-li:hover {
-    background-color: white;
-}
-
-li {
-    list-style-type: none;
-    color: white;
-    font-size: 125%;
+    color: var(--white);
 }
 
 h1 {
     font-size: 250%;
 }
 
+/* HEADER */
+
 header {
-    background-color:cadetblue;
-    height: 35px;
+    background-color:var(--blue);
 }
 
-
 header ul {
-
     display: flex;
     justify-content: space-between;
     align-items: center;
-
+    
+    height: 35px;
     padding: 0 24px;
+}
+
+header li {
+    list-style-type: none;
+    color: var(--white);
+    font-size: 125%;
+}
+
+header a:hover {
+    background-color: var(--white);
+    color: var(--blue);
 }
 
 main {
@@ -59,21 +70,27 @@ main {
 
 button {
     margin: 2%;
-    padding: 10px;
-    background-color: cadetblue;
-    border: 1px dashed black;
+    padding: 10px 20px;
+
+    background-color: var(--blue);
+    color: var(--white);
+    font-weight: bold;
+    font-size: 125%;
+
+    border: none;
     border-radius: 25px;
 }
 
 button:hover {
     cursor: pointer;
+    background-color: #9acbcc;
 }
 
 /* FOOTER */
 
 footer {
     display: flex;
-    background-color: cadetblue;
+    background-color: var(--blue);
     justify-content: center;
     width: 100%;
     padding: 12px;
