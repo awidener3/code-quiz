@@ -12,7 +12,7 @@ var questions = [
     'question 4'
 ];
 
-var scoreboard = [['SJ', 40], ['DR', 3], ['YRM', 600]];
+var scoreboard = [{name: 'SJ', score: 40}, {name: 'DR', score: 3}, { name: 'YRM', score: 600}];
 
 var answers = [
     [['Q1 answer 1', true], ['Q1 answer 2', false], ['Q1 answer 3', false], ['Q1 answer 4', false]],
@@ -21,37 +21,17 @@ var answers = [
     [['Q4 answer 1', false], ['Q4 answer 2', false], ['Q4 answer 3', false], ['Q4 answer 4', true]],
 ];
 
-startBtn.addEventListener("click", function () {
-    mainEl.textContent = '';
-    initializeTimer();
-    printQuestion();
+startBtn.addEventListener("click", function () { // wait for user to click on start button
+    mainEl.textContent = ''; // clear page
+    initializeTimer(); // start timer
+    printQuestion(); // and print the first question
 });
-
-// TIMER HANDLING
-
-function initializeTimer() {
-    if (!timerInterval) {
-        timerInterval = setInterval(startTime, 1000);
-    }
-}
-
-function startTime() {
-    timer++;
-    timerEl.textContent = timer;
-}
-
-function stopTime() {
-    clearInterval(timerInterval);
-    timerInterval = null;
-}
 
 // QUIZ HANDLING
 
 function printQuestion() {
-    // check if there are any questions remaining in the questions array
-    if (questions.length === 0) {
-        endQuiz();
-        return;
+    if (questions.length === 0) { // check if there are any remaining questions
+        return endQuiz(); // if false, end the quiz
     }
 
     randomNum = randomNumber(questions.length);
@@ -72,6 +52,7 @@ function printQuestion() {
 
 function createAnswerChoice(randomNum, index) {
     var answer = document.createElement('li');
+
     answer.classList.add('answer-choice');
     answer.addEventListener('click', checkAnswer);
 
@@ -116,16 +97,14 @@ function endQuiz() {
     var button = document.createElement('button');
     button.textContent = 'Go to Highscores';
 
-    button.addEventListener('click', function() {
-        console.log(initialsInput.value);
-
-        if (!initialsInput.value) {
-            console.log('nothing to see here...')
-        } else {
-            var playerInitials = initialsInput.value;
-            var playerScore = timer;
-            var playerInfo = [playerInitials, playerScore]
-            printHighscores(playerInfo);
+    button.addEventListener('click', function () {
+        if (initialsInput.value) {
+            var playerInfo = {
+                name: initialsInput.value.toUpperCase(), 
+                score: timer
+            }
+            scoreboard.push(playerInfo);
+            printHighscores();
         }
     })
 
@@ -136,12 +115,10 @@ function endQuiz() {
     mainEl.appendChild(button);
 };
 
-function printHighscores(playerInfo) {
-    scoreboard.push(playerInfo);
-
-    sortScoreboard();
-    
+function printHighscores() {
     mainEl.textContent = '';
+    
+    sortScoreboard();
 
     var title = document.createElement('h1');
     title.textContent = 'Leaderboard';
@@ -163,10 +140,10 @@ function printPlayer(index, scores) {
     row.classList.add('score-row');
 
     var playerInitials = document.createElement('p');
-    playerInitials.textContent = scoreboard[index][0];
+    playerInitials.textContent = scoreboard[index].name;
 
     var playerScore = document.createElement('p');
-    playerScore.textContent = scoreboard[index][1];
+    playerScore.textContent = scoreboard[index].score;
 
     row.appendChild(playerInitials);
     row.appendChild(playerScore);
@@ -174,6 +151,30 @@ function printPlayer(index, scores) {
     scores.appendChild(row);
 }
 
+function sortScoreboard() {
+    scoreboard.sort((a,b) => a.score - b.score);
+}
+
+// UTILITY
+
 function randomNumber(max) {
     return Math.floor(Math.random() * max);
+}
+
+// TIMER HANDLING
+
+function initializeTimer() {
+    if (!timerInterval) {
+        timerInterval = setInterval(startTime, 1000);
+    }
+}
+
+function startTime() {
+    timer++;
+    timerEl.textContent = timer;
+}
+
+function stopTime() {
+    clearInterval(timerInterval);
+    timerInterval = null;
 }
