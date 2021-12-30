@@ -104,3 +104,17 @@ footer a img {
 footer a img:hover {
     transform: rotate(360deg);
 }
+
+/* TEST */
+
+.correct {
+    background-color: green;
+}
+
+.answer-choice {
+    list-style-type: lower-alpha;
+}
+
+.answer-choice:hover {
+    cursor: pointer;
+}

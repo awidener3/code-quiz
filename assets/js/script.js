@@ -13,18 +13,16 @@ var questions = [
 ];
 
 var answers = [
-    ['Q1 answer 1', 'Q1 answer 2', 'Q1 answer 3', 'Q1 answer 4'],
-    ['Q2 answer 1', 'Q2 answer 2', 'Q2 answer 3', 'Q2 answer 4'],
-    ['Q3 answer 1', 'Q3 answer 2', 'Q3 answer 3', 'Q3 answer 4'],
-    ['Q4 answer 1', 'Q4 answer 2', 'Q4 answer 3', 'Q4 answer 4']
+    [['Q1 answer 1', true], ['Q1 answer 2', false], ['Q1 answer 3', false], ['Q1 answer 4', false]],
+    [['Q2 answer 1', false], ['Q2 answer 2', true], ['Q2 answer 3', false], ['Q2 answer 4', false]],
+    [['Q3 answer 1', false], ['Q3 answer 2', false], ['Q3 answer 3', true], ['Q3 answer 4', false]],
+    [['Q4 answer 1', false], ['Q4 answer 2', false], ['Q4 answer 3', false], ['Q4 answer 4', true]],
 ];
 
-
 startBtn.addEventListener("click", function () {
-    // clear the screen
     mainEl.textContent = '';
     initializeTimer();
-    askQuestion();
+    printQuestion();
 });
 
 function initializeTimer() {
@@ -43,12 +41,12 @@ function stopTime() {
     timerInterval = null;
 }
 
-function askQuestion() {
-
-    // !tests
-    // console.log('Questions array before click: ' + questions);
-    // console.log('Answers array before click: ' + answers);
-    // !tests
+function printQuestion() {
+    // check if there are any questions remaining in the questions array
+    if (questions.length === 0) {
+        endQuiz();
+        return;
+    }
 
     randomNum = randomNumber(questions.length);
 
@@ -57,54 +55,36 @@ function askQuestion() {
 
     var answerList = document.createElement('ol');
 
-    var answerOne = document.createElement('li');
-    answerOne.textContent = answers[randomNum][0]
-    answerList.appendChild(answerOne);
-
-    var answerTwo = document.createElement('li');
-    answerTwo.textContent = answers[randomNum][1];
-    answerList.appendChild(answerTwo);
-
-    var answerThree = document.createElement('li');
-    answerThree.textContent = answers[randomNum][2];
-    answerList.appendChild(answerThree);
-
-    var answerFour = document.createElement('li');
-    answerFour.textContent = answers[randomNum][3];
-    answerList.appendChild(answerFour);
-
-    var nextButton = document.createElement('button');
-    nextButton.textContent = 'Next';
-
-    nextButton.addEventListener('click', function () {
-        // remove the questions and answers from their arrays
-        questions.splice(randomNum, 1);
-        answers.splice(randomNum, 1);
-
-        // clear the screen
-        mainEl.textContent = '';
-
-            // !tests
-            // console.log('Questions array after click: ' + questions);
-            // console.log('Answers array after click: ' + answers);
-            // !tests
-
-        // check if there are any questions remaining in the questions array
-        if (questions.length > 0) {
-            askQuestion();
-        } else {
-            endQuiz();
-        }
-    })
+    answerList.appendChild(createAnswerLi(randomNum, 0));
+    answerList.appendChild(createAnswerLi(randomNum, 1));
+    answerList.appendChild(createAnswerLi(randomNum, 2));
+    answerList.appendChild(createAnswerLi(randomNum, 3));
 
     mainEl.appendChild(questionTitle);
     mainEl.appendChild(answerList);
-    mainEl.appendChild(nextButton);
 }
 
-// function createAnswerLi() {
+function createAnswerLi(randomNum, index) {
+    var answer = document.createElement('li');
+    answer.classList.add('answer-choice');
+    answer.addEventListener('click', checkAnswer);
 
-// }
+    answer.textContent = answers[randomNum][index][0];
+    answer.dataset.answer = answers[randomNum][index][1];
+
+    return answer;
+}
+
+function checkAnswer() {
+    if (this.dataset.answer === 'true') {
+        questions.splice(randomNum, 1);
+        answers.splice(randomNum, 1);
+        mainEl.textContent = '';
+        printQuestion();
+    } else {
+        timer += 15;
+    }
+}
 
 function endQuiz() {
     stopTime();
