@@ -72,6 +72,8 @@ button {
     margin: 2%;
     padding: 10px 20px;
 
+    font-family: monospace;
+
     background-color: var(--blue);
     color: var(--white);
     font-weight: bold;
@@ -117,4 +119,17 @@ footer a img:hover {
 
 .answer-choice:hover {
     cursor: pointer;
+}
+
+#scoreboard {
+    display: flex;
+    flex-direction: column;
+}
+
+#scoreboard p {
+    margin: 25px;
+}
+
+.score-row {
+    display: flex;
 }
