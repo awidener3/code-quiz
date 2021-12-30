@@ -12,7 +12,7 @@ var questions = [
     'question 4'
 ];
 
-var scoreboard = [{name: 'SJ', score: 40}, {name: 'DR', score: 3}, { name: 'YRM', score: 600}];
+var scoreboard = [{name: 'SJ', score: 40}, {name: 'DR', score: 3}, { name: 'YRM', score: 69}];
 
 var answers = [
     [['Q1 answer 1', true], ['Q1 answer 2', false], ['Q1 answer 3', false], ['Q1 answer 4', false]],
@@ -34,14 +34,14 @@ function printQuestion() {
         return endQuiz(); // if false, end the quiz
     }
 
-    randomNum = randomNumber(questions.length);
+    randomNum = randomNumber(questions.length); // generate a random number based on the number of questions available
 
     var questionTitle = document.createElement('h1')
     questionTitle.textContent = questions[randomNum];
 
     var answerList = document.createElement('ol');
 
-    answerList.appendChild(createAnswerChoice(randomNum, 0));
+    answerList.appendChild(createAnswerChoice(randomNum, 0)); // print questions from answerList array onto screen
     answerList.appendChild(createAnswerChoice(randomNum, 1));
     answerList.appendChild(createAnswerChoice(randomNum, 2));
     answerList.appendChild(createAnswerChoice(randomNum, 3));
@@ -52,30 +52,27 @@ function printQuestion() {
 
 function createAnswerChoice(randomNum, index) {
     var answer = document.createElement('li');
-
     answer.classList.add('answer-choice');
     answer.addEventListener('click', checkAnswer);
-
     answer.textContent = answers[randomNum][index][0];
     answer.dataset.answer = answers[randomNum][index][1];
-
     return answer;
 }
 
 function checkAnswer() {
-    if (this.dataset.answer === 'true') {
-        questions.splice(randomNum, 1);
+    if (this.dataset.answer === 'true') { // check to see if the answer is true or false
+        questions.splice(randomNum, 1); // remove the question and its corresponding answers from the array
         answers.splice(randomNum, 1);
-        mainEl.textContent = '';
-        printQuestion();
+        mainEl.textContent = ''; // clear the screen
+        printQuestion(); // print the next question
     } else {
-        this.textContent = this.textContent + ' ' + '❌';
-        timer += 15;
+        this.textContent = this.textContent + ' ' + '❌'; // add an 'x' signifying a wrong answer
+        timer += 15; // add a 15 second penalty to the timer
     }
 }
 
 function endQuiz() {
-    stopTime();
+    stopTime(); // stop the interval
 
     var affirmations = ['Keep it up, pal!', 'You\'re doing great!', 'I bet you could do this with your eyes closed!', 'I\'m sure everyone would be impressed if they saw you take this quiz!', 'Steve Jobs? Is that you?!', 'Excelsior!']
 
@@ -100,10 +97,10 @@ function endQuiz() {
     button.addEventListener('click', function () {
         if (initialsInput.value) {
             var playerInfo = {
-                name: initialsInput.value.toUpperCase(), 
+                name: initialsInput.value.toUpperCase(), // change the input to uppercase
                 score: timer
             }
-            scoreboard.push(playerInfo);
+            scoreboard.push(playerInfo); // add the object to the array
             printHighscores();
         }
     })
@@ -116,9 +113,9 @@ function endQuiz() {
 };
 
 function printHighscores() {
-    mainEl.textContent = '';
+    mainEl.textContent = ''; // clear the page
     
-    sortScoreboard();
+    sortScoreboard(); // sort the scoreboard array by lowest score to highest
 
     var title = document.createElement('h1');
     title.textContent = 'Leaderboard';
@@ -151,18 +148,17 @@ function printPlayer(index, scores) {
     scores.appendChild(row);
 }
 
-function sortScoreboard() {
-    scoreboard.sort((a,b) => a.score - b.score);
-}
 
 // UTILITY
-
 function randomNumber(max) {
     return Math.floor(Math.random() * max);
 }
 
-// TIMER HANDLING
+function sortScoreboard() {
+    scoreboard.sort((a,b) => a.score - b.score);
+}
 
+// TIMER HANDLING
 function initializeTimer() {
     if (!timerInterval) {
         timerInterval = setInterval(startTime, 1000);
