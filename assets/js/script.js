@@ -69,7 +69,12 @@ function printHighscores() {
         printPlayer(i, scores);
     }
 
+    var button = document.createElement('button');
+    button.textContent = 'Back to Home';
+    button.addEventListener('click', printHome);
+
     mainEl.appendChild(scores);
+    mainEl.appendChild(button)
 }
 
 function printPlayer(index, scores) {
@@ -103,7 +108,6 @@ function startQuiz() {
 }
 
 function printQuestion() {
-
     if (quizQuestions.length === 0) { // check if there are any remaining questions
         return endQuiz(); // if false, end the quiz
     }
