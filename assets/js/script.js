@@ -23,12 +23,17 @@ const answers = [
     [['Q4 answer 1', false], ['Q4 answer 2', false], ['Q4 answer 3', false], ['Q4 answer 4', true]],
 ];
 
+var quizQuestions = JSON.parse(JSON.stringify(questions));
+var quizAnswers = JSON.parse(JSON.stringify(answers));
+
 // BUILD HOME
 homeLi.addEventListener('click', printHome);
 
 function printHome() {
     mainEl.textContent = '';
     stopTime();
+    resetTimer();
+    resetQuiz();
 
     printTitle('Coding Quiz Challenge');
     
@@ -50,6 +55,8 @@ highscoreLi.addEventListener('click', printHighscores);
 function printHighscores() {
     mainEl.textContent = ''; // clear the page
     stopTime();
+    resetTimer();
+    resetQuiz();
     
     sortScoreboard(); // sort the scoreboard array by lowest score to highest
 
@@ -96,16 +103,14 @@ function startQuiz() {
 }
 
 function printQuestion() {
-    // var quizQuestions = JSON.parse(JSON.stringify(questions));
-    // var quizAnswers = JSON.parse(JSON.stringify(answers));
 
-    if (questions.length === 0) { // check if there are any remaining questions
+    if (quizQuestions.length === 0) { // check if there are any remaining questions
         return endQuiz(); // if false, end the quiz
     }
 
-    randomNum = randomNumber(questions.length); // generate a random number based on the number of questions available
+    randomNum = randomNumber(quizQuestions.length); // generate a random number based on the number of questions available
 
-    printTitle(questions[randomNum]);
+    printTitle(quizQuestions[randomNum]);
 
     var answerList = document.createElement('ol');
 
@@ -122,16 +127,16 @@ function createAnswerChoice(randomNum, index) {
 
     answer.classList.add('answer-choice');
     answer.addEventListener('click', checkAnswer);
-    answer.textContent = answers[randomNum][index][0];
-    answer.dataset.answer = answers[randomNum][index][1];
+    answer.textContent = quizAnswers[randomNum][index][0];
+    answer.dataset.answer = quizAnswers[randomNum][index][1];
 
     return answer;
 }
 
 function checkAnswer() {
     if (this.dataset.answer === 'true') { // check to see if the answer is true or false
-        questions.splice(randomNum, 1); // remove the question and its corresponding answers from the array
-        answers.splice(randomNum, 1);
+        quizQuestions.splice(randomNum, 1); // remove the question and its corresponding answers from the array
+        quizAnswers.splice(randomNum, 1);
         mainEl.textContent = ''; // clear the screen
         printQuestion(); // print the next question
     } else {
@@ -181,6 +186,11 @@ function endQuiz() {
     mainEl.appendChild(button);
 };
 
+function resetQuiz() {
+    quizQuestions = JSON.parse(JSON.stringify(questions));
+    quizAnswers = JSON.parse(JSON.stringify(answers));
+}
+
 // TIMER HANDLING
 function initializeTimer() {
     if (!timerInterval) {
@@ -194,11 +204,13 @@ function startTime() {
 }
 
 function stopTime() {
-    timer = 0;
-    timerEl.textContent = timer;
-
     clearInterval(timerInterval);
     timerInterval = null;
+}
+
+function resetTimer() {
+    timer = 0;
+    timerEl.textContent = timer;
 }
 
 // UTILITY
