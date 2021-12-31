@@ -1,6 +1,8 @@
 var startBtn = document.getElementById('start-button');
 var timerEl = document.getElementById('timer');
 var mainEl = document.getElementById('main');
+var homeLi = document.getElementById('home-link');
+var highscoreLi = document.getElementById('highscore-link')
 
 var timerInterval;
 var timer = 0;
@@ -21,13 +23,41 @@ var answers = [
     [['Q4 answer 1', false], ['Q4 answer 2', false], ['Q4 answer 3', false], ['Q4 answer 4', true]],
 ];
 
-startBtn.addEventListener("click", function () { // wait for user to click on start button
+
+
+// BUILD HOME
+homeLi.addEventListener('click', printHome);
+
+function printHome() {
+    mainEl.textContent = '';
+    stopTime();
+    timer = 0;
+    timerEl.textContent = timer;
+    
+    var title = document.createElement('h1');
+    title.textContent = 'Coding Quiz Challenge';
+    
+    var par = document.createElement('p');
+    par.textContent = 'Prepare thyself! For a quiz of immeasurable difficulty awaits!';
+    
+    var button = document.createElement('button');
+    button.textContent = 'Start Quiz!';
+    button.setAttribute('id', 'start-button');
+    button.addEventListener('click', startQuiz); // wait for user to click on start button
+    
+    mainEl.appendChild(title);
+    mainEl.appendChild(par);
+    mainEl.appendChild(button);
+}
+
+// QUIZ HANDLING
+startBtn.addEventListener('click', startQuiz); // wait for user to click on start button
+
+function startQuiz() {
     mainEl.textContent = ''; // clear page
     initializeTimer(); // start timer
     printQuestion(); // and print the first question
-});
-
-// QUIZ HANDLING
+}
 
 function printQuestion() {
     if (questions.length === 0) { // check if there are any remaining questions
@@ -36,8 +66,8 @@ function printQuestion() {
 
     randomNum = randomNumber(questions.length); // generate a random number based on the number of questions available
 
-    var questionTitle = document.createElement('h1')
-    questionTitle.textContent = questions[randomNum];
+    var title = document.createElement('h1')
+    title.textContent = questions[randomNum];
 
     var answerList = document.createElement('ol');
 
@@ -46,7 +76,7 @@ function printQuestion() {
     answerList.appendChild(createAnswerChoice(randomNum, 2));
     answerList.appendChild(createAnswerChoice(randomNum, 3));
 
-    mainEl.appendChild(questionTitle);
+    mainEl.appendChild(title);
     mainEl.appendChild(answerList);
 }
 

@@ -60,6 +60,14 @@ header a:hover {
     color: var(--blue);
 }
 
+.nav-links {
+    display: flex;
+}
+
+.nav-links a {
+    margin: 0 15px;
+}
+
 main {
     display: flex;
     flex-direction: column;
