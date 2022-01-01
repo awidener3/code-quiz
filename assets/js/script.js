@@ -7,7 +7,7 @@ var highscoreLi = document.getElementById('highscore-link')
 var timerInterval;
 var timer = 0;
 
-var scoreboard = [{name: 'SJ', score: 40}, {name: 'DR', score: 3}, { name: 'YRM', score: 69}];
+// var scoreboard = [{name: 'SJ', score: 40}, {name: 'DR', score: 3}, { name: 'YRM', score: 69}];
 
 const questions = [
     'question 1',
@@ -132,8 +132,6 @@ function printHome() {
     mainEl.appendChild(button);
 }
 
-
-
 function createChoice(choiceName) {
     var choice = document.createElement('option');
     choice.textContent = choiceName;
@@ -144,12 +142,11 @@ function createChoice(choiceName) {
 highscoreLi.addEventListener('click', printHighscores);
 
 function printHighscores() {
+    var scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
     mainEl.textContent = ''; // clear the page
     stopTime();
     resetTimer();
     resetQuiz();
-    
-    sortScoreboard(); // sort the scoreboard array by lowest score to highest
 
     printTitle('Leaderboard')
 
@@ -168,7 +165,30 @@ function printHighscores() {
     mainEl.appendChild(button)
 }
 
+function addHighScore() {
+    var scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
+    if (scoreboard == null) {
+        scoreboard = [];    
+    }
+
+    var playerName = document.getElementById('initials-input').value.toUpperCase();
+    var playerScore = timer;
+    var player = {
+        'name': playerName,
+        'score': playerScore
+    };
+
+    localStorage.setItem('player', JSON.stringify(player));
+
+    scoreboard.push(player); // ? push player object onto localStorage array
+    scoreboard.sort((a,b) => a.score - b.score); // ? sort the array lowest to highest
+
+    localStorage.setItem('scoreboard', JSON.stringify(scoreboard));
+}
+
 function printPlayer(index, scores) {
+    var scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
+
     var row = document.createElement('div');
     row.classList.add('score-row');
 
@@ -184,11 +204,7 @@ function printPlayer(index, scores) {
     scores.appendChild(row);
 }
 
-function sortScoreboard() {
-    scoreboard.sort((a,b) => a.score - b.score);
-}
-
-// QUIZ HANDLING
+// !QUIZ HANDLING
 
 function startQuiz() {
     setQuiz();
@@ -267,7 +283,7 @@ function checkAnswer() {
         quizAnswers.splice(randomNum, 1);
         this.classList.add('correct');
 
-        setTimeout(printQuestion, 1500); // print the next question
+        setTimeout(printQuestion, 1000); // print the next question
 
     } else {
         if (!this.textContent.endsWith('❌')) {
@@ -294,21 +310,21 @@ function endQuiz() {
 
     var initialsInput = document.createElement('input');
     initialsInput.classList.add('initials-input');
-    initialsInput.maxLength = 2;
+    initialsInput.setAttribute('id', 'initials-input');
     initialsInput.maxLength = 3;
     initialsInput.size = 4;
-    initialsInput.required = true;
 
     var button = document.createElement('button');
     button.textContent = 'Go to Highscores';
 
     button.addEventListener('click', function () {
         if (initialsInput.value) {
-            var playerInfo = {
-                name: initialsInput.value.toUpperCase(), // change the input to uppercase
-                score: timer
-            }
-            scoreboard.push(playerInfo); // add the object to the array
+            // var playerInfo = {
+            //     name: initialsInput.value.toUpperCase(), // change the input to uppercase
+            //     score: timer
+            // }
+            // scoreboard.push(playerInfo); // add the object to the array
+            addHighScore();
             printHighscores();
         }
     })
@@ -325,7 +341,7 @@ function resetQuiz() {
     quizAnswers = null;
 }
 
-// TIMER HANDLING
+// !TIMER HANDLING
 function initializeTimer() {
     if (!timerInterval) {
         timerInterval = setInterval(startTime, 1000);
