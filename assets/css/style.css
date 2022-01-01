@@ -27,7 +27,7 @@ body {
 
 a {
     text-decoration: none;
-    color: var(--white);
+    color: white;
 }
 
 h1 {
@@ -51,7 +51,7 @@ header ul {
 
 header li {
     list-style-type: none;
-    color: var(--white);
+    color: white;
     font-size: 125%;
 }
 
@@ -83,7 +83,7 @@ button {
     font-family: monospace;
 
     background-color: var(--blue);
-    color: var(--white);
+    color: white;
     font-weight: bold;
     font-size: 125%;
 
@@ -94,6 +94,24 @@ button {
 button:hover {
     cursor: pointer;
     background-color: #9acbcc;
+}
+
+.selection-div {
+    border: 2px dashed black;
+    padding: 12px 20px;
+    margin: 12px;
+}
+
+label {
+    font-size: 130%;
+    margin: 0 12px 0 0;
+}
+
+select {
+    padding: 3px 6px;
+    font-family: monospace;
+    font-size: 125%;
+    border-radius: 8px;
 }
 
 .card {
@@ -139,6 +157,21 @@ button:hover {
 
 .correct::after {
     content: ' 👍';
+}
+
+.enter-initials {
+    margin-top: 16px;
+    font-size: 140%;
+}
+
+.initials-input {
+    padding: 6px 12px;
+    margin: 12px;
+    border-radius: 8px;
+    border: 1px solid gray;
+    text-align: center;
+    font-family: monospace;
+    font-size: 250%;
 }
 
 /* FOOTER */

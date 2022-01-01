@@ -33,11 +33,11 @@ const htmlQuestions = [
     'How do you open a link in a new window?',
     '<h3> is the largest default heading tag.',
     'Which of the following table tags is used to create a table row?',
-    'Which of the following HTML tags is not valid?',
-    'Which of the following is not an HTML attribute?',
+    'Which of the following HTML tags is NOT valid?',
+    'Which of the following is NOT an HTML attribute?',
     'What HTML form input must be used to present multiple options, but select only one?',
     'Which of the following tags is used to create an unordered list?',
-    'Which element is not empty/self-closing?'
+    'Which element is NOT empty/self-closing?'
 
 ];
 
@@ -105,16 +105,22 @@ function printHome() {
     var par = document.createElement('p');
     par.textContent = 'Prepare thyself! For a quiz of immeasurable difficulty awaits!';
 
+    var categoryDiv = document.createElement('div');
+    categoryDiv.classList.add('selection-div');
+
     var label = document.createElement('label');
-    label.textContent = 'Choose a Category:'
+    label.textContent = 'Select a Category:'
 
     var select = document.createElement('select');
     select.setAttribute('id', 'select')
     
-    select.appendChild(createChoice('HTML'));
-    select.appendChild(createChoice('CSS'));
-    select.appendChild(createChoice('JavaScript'));
+    select.appendChild(createChoice('HTML Basics'));
+    select.appendChild(createChoice('CSS Basics'));
+    select.appendChild(createChoice('JavaScript Basics'));
     select.appendChild(createChoice('Testing'));
+
+    categoryDiv.appendChild(label);
+    categoryDiv.appendChild(select);
     
     var button = document.createElement('button');
     button.textContent = 'Start Quiz!';
@@ -122,8 +128,7 @@ function printHome() {
     button.addEventListener('click', startQuiz); // wait for user to click on start button
     
     mainEl.appendChild(par);
-    mainEl.appendChild(label);
-    mainEl.appendChild(select);
+    mainEl.appendChild(categoryDiv);
     mainEl.appendChild(button);
 }
 
@@ -197,16 +202,13 @@ function startQuiz() {
 function setQuiz() {
     var selection = document.getElementById('select');
     
-    if (selection.value === 'HTML') {
-        console.log('html!');
+    if (selection.value === 'HTML Basics') {
         quizQuestions = JSON.parse(JSON.stringify(htmlQuestions));
         quizAnswers = JSON.parse(JSON.stringify(htmlAnswers));
-    } else if (selection.value === 'CSS') {
-        console.log('css!');
+    } else if (selection.value === 'CSS Basics') {
         quizQuestions = JSON.parse(JSON.stringify(cssQuestions));
         quizAnswers = JSON.parse(JSON.stringify(cssAnswers));
-    } else if (selection.value === 'JavaScript') {
-        console.log('javascript!');
+    } else if (selection.value === 'JavaScript Basics') {
         quizQuestions = JSON.parse(JSON.stringify(javascriptQuestions));
         quizAnswers = JSON.parse(JSON.stringify(javascriptAnswers));
     } else {
@@ -217,6 +219,7 @@ function setQuiz() {
 
 function printQuestion() {
     if (quizQuestions.length === 0) { // check if there are any remaining questions
+        mainEl.textContent = '';
         return endQuiz(); // if false, end the quiz
     }
 
@@ -286,9 +289,11 @@ function endQuiz() {
     results.textContent = 'You scored ' + timer + ' points. ' + affirmations[randomNumber(affirmations.length)];
 
     var enterInitials = document.createElement('p');
-    enterInitials.textContent = 'Please enter your initials.'
+    enterInitials.textContent = 'Please enter your initials:'
+    enterInitials.classList.add('enter-initials')
 
     var initialsInput = document.createElement('input');
+    initialsInput.classList.add('initials-input');
     initialsInput.maxLength = 2;
     initialsInput.maxLength = 3;
     initialsInput.size = 4;
