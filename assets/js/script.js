@@ -7,8 +7,6 @@ var highscoreLi = document.getElementById('highscore-link')
 var timerInterval;
 var timer = 0;
 
-// var scoreboard = [{name: 'SJ', score: 40}, {name: 'DR', score: 3}, { name: 'YRM', score: 69}];
-
 const questions = [
     'question 1',
     'question 2',
@@ -59,17 +57,25 @@ const htmlAnswers = [
 // CSS QUIZ
 
 const cssQuestions = [
-    'css 1',
-    'css 2',
-    'css 3',
-    'css 4'
+    'Which CSS selector would we use if we wanted to define a style for a unique element?',
+    'What does CSS stand for?',
+    'What is the correct HTML for referring to an external style sheet?',
+    'Where in an HTML document is the correct place to refer to an external style sheet?',
+    'Which HTML tag is used to define an internal style sheet?',
+    'Which HTML attribute is used to define inline styles?',
+    'Which property is used to change the background color?',
+    'Which CSS property controls the text size?'
 ];
 
 const cssAnswers = [
-    [['css1 answer 1', true], ['css1 answer 2', false], ['css1 answer 3', false], ['css1 answer 4', false]],
-    [['css2 answer 1', false], ['css2 answer 2', true], ['css2 answer 3', false], ['css2 answer 4', false]],
-    [['css3 answer 1', false], ['css3 answer 2', false], ['css3 answer 3', true], ['css3 answer 4', false]],
-    [['css4 answer 1', false], ['css4 answer 2', false], ['css4 answer 3', false], ['css4 answer 4', true]],
+    [['id', true], ['text', false], ['class', false]],
+    [['Cascading Style Sheets', true], ['Computer Style Sheets', false], ['Colorful Style Sheets', false], ['Creative Style Sheets', false]],
+    [['<style src="mystyle.css">', false], ['<stylesheet>mystyle.css</stylesheet>', false], ['<link rel="stylesheet" type="text/css" href="mystyle.css">', true]],
+    [['In the <head> section', true], ['In the <body> section', false], ['At the end of the document', false]],
+    [['<css>', false], ['<style>', true], ['<script>', false]],
+    [['class', false], ['style', true], ['styles', false], ['font', false]],
+    [['background-color', true], ['bgcolor', false], ['color', false]],
+    [['text-size', false], ['font-size', true], ['text-style', false], ['font-style', false]]
 ];
 
 // JS QUIZ
@@ -295,6 +301,8 @@ function checkAnswer() {
 
 function endQuiz() {
     stopTime(); // stop the interval
+    quizQuestions = null;
+    quizAnswers - null;
 
     var affirmations = ['Keep it up, pal!', 'You\'re doing great!', 'I bet you could do this with your eyes closed!', 'I\'m sure everyone would be impressed if they saw you take this quiz!', 'Steve Jobs? Is that you?!', 'Excelsior!']
 
@@ -319,11 +327,6 @@ function endQuiz() {
 
     button.addEventListener('click', function () {
         if (initialsInput.value) {
-            // var playerInfo = {
-            //     name: initialsInput.value.toUpperCase(), // change the input to uppercase
-            //     score: timer
-            // }
-            // scoreboard.push(playerInfo); // add the object to the array
             addHighScore();
             printHighscores();
         }
