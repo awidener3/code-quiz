@@ -23,8 +23,56 @@ const answers = [
     [['Q4 answer 1', false], ['Q4 answer 2', false], ['Q4 answer 3', false], ['Q4 answer 4', true]],
 ];
 
-var quizQuestions = JSON.parse(JSON.stringify(questions));
-var quizAnswers = JSON.parse(JSON.stringify(answers));
+// HTML QUIZ
+
+const htmlQuestions = [
+    'What does HTML stand for?',
+    'How many tags are in a regular element?',
+    'What is the difference between an opening tag and a closing tag?',
+    '<br/> What type of tag is this?'
+];
+
+const htmlAnswers = [
+    [['Hyper Text Markup Language', true], ['Hot Mail', false], ['How to Make Lasagna', false]],
+    [['2', true], ['1', false], ['3', false]],
+    [['Opening tag has a / in front', false], ['Closing tag has a / in front', true], ['There is no difference', false]],
+    [['Break tag', true], ['A broken one', false], ['An opening tag', false]],
+];
+
+// CSS QUIZ
+
+const cssQuestions = [
+    'css 1',
+    'css 2',
+    'css 3',
+    'css 4'
+];
+
+const cssAnswers = [
+    [['css1 answer 1', true], ['css1 answer 2', false], ['css1 answer 3', false], ['css1 answer 4', false]],
+    [['css2 answer 1', false], ['css2 answer 2', true], ['css2 answer 3', false], ['css2 answer 4', false]],
+    [['css3 answer 1', false], ['css3 answer 2', false], ['css3 answer 3', true], ['css3 answer 4', false]],
+    [['css4 answer 1', false], ['css4 answer 2', false], ['css4 answer 3', false], ['css4 answer 4', true]],
+];
+
+// JS QUIZ
+
+const javascriptQuestions = [
+    'javascript 1',
+    'javascript 2',
+    'javascript 3',
+    'javascript 4'
+];
+
+const javascriptAnswers = [
+    [['javascript1 answer 1', true], ['javascript1 answer 2', false], ['javascript1 answer 3', false], ['javascript1 answer 4', false]],
+    [['javascript2 answer 1', false], ['javascript2 answer 2', true], ['javascript2 answer 3', false], ['javascript2 answer 4', false]],
+    [['javascript3 answer 1', false], ['javascript3 answer 2', false], ['javascript3 answer 3', true], ['javascript3 answer 4', false]],
+    [['javascript4 answer 1', false], ['javascript4 answer 2', false], ['javascript4 answer 3', false], ['javascript4 answer 4', true]],
+];
+
+var quizQuestions;
+var quizAnswers;
 
 // BUILD HOME
 homeLi.addEventListener('click', printHome);
@@ -39,6 +87,17 @@ function printHome() {
     
     var par = document.createElement('p');
     par.textContent = 'Prepare thyself! For a quiz of immeasurable difficulty awaits!';
+
+    var label = document.createElement('label');
+    label.textContent = 'Choose a Category:'
+
+    var select = document.createElement('select');
+    select.setAttribute('id', 'select')
+    
+    select.appendChild(createChoice('HTML'));
+    select.appendChild(createChoice('CSS'));
+    select.appendChild(createChoice('JavaScript'));
+    select.appendChild(createChoice('Testing'));
     
     var button = document.createElement('button');
     button.textContent = 'Start Quiz!';
@@ -46,7 +105,17 @@ function printHome() {
     button.addEventListener('click', startQuiz); // wait for user to click on start button
     
     mainEl.appendChild(par);
+    mainEl.appendChild(label);
+    mainEl.appendChild(select);
     mainEl.appendChild(button);
+}
+
+
+
+function createChoice(choiceName) {
+    var choice = document.createElement('option');
+    choice.textContent = choiceName;
+    return choice;
 }
 
 // BUILD HIGHSCORE PAGE
@@ -98,13 +167,35 @@ function sortScoreboard() {
 }
 
 // QUIZ HANDLING
-startBtn.addEventListener('click', startQuiz); // wait for user to click on start button
 
 function startQuiz() {
+    setQuiz();
+
     mainEl.textContent = ''; // clear page
 
     initializeTimer(); // start timer
     printQuestion(); // and print the first question
+}
+
+function setQuiz() {
+    var selection = document.getElementById('select');
+    
+    if (selection.value === 'HTML') {
+        console.log('html!');
+        quizQuestions = JSON.parse(JSON.stringify(htmlQuestions));
+        quizAnswers = JSON.parse(JSON.stringify(htmlAnswers));
+    } else if (selection.value === 'CSS') {
+        console.log('css!');
+        quizQuestions = JSON.parse(JSON.stringify(cssQuestions));
+        quizAnswers = JSON.parse(JSON.stringify(cssAnswers));
+    } else if (selection.value === 'JavaScript') {
+        console.log('javascript!');
+        quizQuestions = JSON.parse(JSON.stringify(javascriptQuestions));
+        quizAnswers = JSON.parse(JSON.stringify(javascriptAnswers));
+    } else {
+        quizQuestions = JSON.parse(JSON.stringify(questions));
+        quizAnswers = JSON.parse(JSON.stringify(answers));
+    }
 }
 
 function printQuestion() {
@@ -114,14 +205,13 @@ function printQuestion() {
 
     randomNum = randomNumber(quizQuestions.length); // generate a random number based on the number of questions available
 
-    printTitle(quizQuestions[randomNum]);
+    printQuestionTitle(quizQuestions[randomNum]);
 
     var answerList = document.createElement('ol');
 
-    answerList.appendChild(createAnswerChoice(randomNum, 0)); // print questions from answerList array onto screen
-    answerList.appendChild(createAnswerChoice(randomNum, 1));
-    answerList.appendChild(createAnswerChoice(randomNum, 2));
-    answerList.appendChild(createAnswerChoice(randomNum, 3));
+    for (var i = 0; i < quizAnswers[randomNum].length; i++) {
+        answerList.appendChild(createAnswerChoice(randomNum, i)); // print questions depending on how many there are for that question
+    }
 
     mainEl.appendChild(answerList);
 }
@@ -191,8 +281,8 @@ function endQuiz() {
 };
 
 function resetQuiz() {
-    quizQuestions = JSON.parse(JSON.stringify(questions));
-    quizAnswers = JSON.parse(JSON.stringify(answers));
+    quizQuestions = null;
+    quizAnswers = null;
 }
 
 // TIMER HANDLING
@@ -227,3 +317,11 @@ function printTitle(titleContent) {
     title.textContent = titleContent;
     mainEl.appendChild(title);
 }
+
+function printQuestionTitle(titleContent) {
+    var title = document.createElement('h2');
+    title.textContent = titleContent;
+    mainEl.appendChild(title);
+}
+
+printHome();
