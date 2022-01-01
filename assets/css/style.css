@@ -96,6 +96,51 @@ button:hover {
     background-color: #9acbcc;
 }
 
+.card {
+    background-color: white;
+    padding: 32px;
+
+    border-radius: 8px;
+    box-shadow: 3px 3px 10px #808080;
+
+    max-width: 550px;
+}
+
+.card i {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.card ol {
+    margin-left: 48px;
+    /* line-height: 2.5; */
+}
+
+.card .answer-choice {
+    font-size: 125%;
+    padding: 8px;
+}
+
+.card .answer-choice:hover {
+    background-color: var(--white);
+    border-radius: 8px;
+}
+
+.card .answer-choice:active {
+    background-color: #c0c0c0;
+    border-radius: 8px;
+}
+
+.question-title {
+    border-bottom: 2px dashed black;
+    margin-bottom: 12px;
+}
+
+.correct::after {
+    content: ' 👍';
+}
+
 /* FOOTER */
 
 footer {
@@ -103,7 +148,7 @@ footer {
     background-color: var(--blue);
     justify-content: center;
     width: 100%;
-    padding: 12px;
+    padding: 6px 12px;
 }
 
 footer a img {
@@ -113,12 +158,6 @@ footer a img {
 
 footer a img:hover {
     transform: rotate(360deg);
-}
-
-/* TEST */
-
-.correct {
-    background-color: green;
 }
 
 .answer-choice {

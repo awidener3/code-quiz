@@ -26,17 +26,34 @@ const answers = [
 // HTML QUIZ
 
 const htmlQuestions = [
+
     'What does HTML stand for?',
-    'How many tags are in a regular element?',
-    'What is the difference between an opening tag and a closing tag?',
-    '<br/> What type of tag is this?'
+    'The <title> element must be located inside...',
+    'Which tag is used to create a hyperlink?',
+    'How do you open a link in a new window?',
+    '<h3> is the largest default heading tag.',
+    'Which of the following table tags is used to create a table row?',
+    'Which of the following HTML tags is not valid?',
+    'Which of the following is not an HTML attribute?',
+    'What HTML form input must be used to present multiple options, but select only one?',
+    'Which of the following tags is used to create an unordered list?',
+    'Which element is not empty/self-closing?'
+
 ];
 
 const htmlAnswers = [
+
     [['Hyper Text Markup Language', true], ['Hot Mail', false], ['How to Make Lasagna', false]],
-    [['2', true], ['1', false], ['3', false]],
-    [['Opening tag has a / in front', false], ['Closing tag has a / in front', true], ['There is no difference', false]],
-    [['Break tag', true], ['A broken one', false], ['An opening tag', false]],
+    [['the <head> element', true], ['the <body> element', false]],
+    [['<a>', true], ['<img>', false], ['<dl>', false], ['<link>', false]],
+    [['target="_new"', false], ['target="_window"', false], ['target="_blank"', true]],
+    [['True', false], ['False', true]],
+    [['<th>', false], ['<td>', false], ['<tr>', true], ['<table>', false]],
+    [['<h1>', false], ['<h8>', true], ['<h4>', false], ['<h5>', false]],
+    [['alt', false], ['target', false], ['fontSize', true], ['id', false]],
+    [['<input type="text">', false], ['<input type="radio">', true], ['<input type="checkbox">', false]],
+    [['<ul>', true], ['<ol>', false]],
+    [['<br>', false], ['<p>', true], ['<img>', false], ['<hr>', false]]
 ];
 
 // CSS QUIZ
@@ -205,7 +222,19 @@ function printQuestion() {
 
     randomNum = randomNumber(quizQuestions.length); // generate a random number based on the number of questions available
 
-    printQuestionTitle(quizQuestions[randomNum]);
+    mainEl.textContent = ''; // clear the screen
+
+    var card = document.createElement('div');
+    card.classList.add('card');
+
+    var icon = document.createElement('i');
+    icon.classList.add('fas');
+    icon.classList.add('fa-question-circle');
+    icon.classList.add('fa-4x');
+
+    card.appendChild(icon);
+
+    card.appendChild(printQuestionTitle(quizQuestions[randomNum]));
 
     var answerList = document.createElement('ol');
 
@@ -213,7 +242,9 @@ function printQuestion() {
         answerList.appendChild(createAnswerChoice(randomNum, i)); // print questions depending on how many there are for that question
     }
 
-    mainEl.appendChild(answerList);
+    card.appendChild(answerList);
+
+    mainEl.appendChild(card);
 }
 
 function createAnswerChoice(randomNum, index) {
@@ -231,11 +262,15 @@ function checkAnswer() {
     if (this.dataset.answer === 'true') { // check to see if the answer is true or false
         quizQuestions.splice(randomNum, 1); // remove the question and its corresponding answers from the array
         quizAnswers.splice(randomNum, 1);
-        mainEl.textContent = ''; // clear the screen
-        printQuestion(); // print the next question
+        this.classList.add('correct');
+
+        setTimeout(printQuestion, 1500); // print the next question
+
     } else {
-        this.textContent = this.textContent + ' ' + '❌'; // add an 'x' signifying a wrong answer
-        timer += 15; // add a 15 second penalty to the timer
+        if (!this.textContent.endsWith('❌')) {
+            this.textContent = this.textContent + ' ' + '❌'; // add an 'x' signifying a wrong answer
+            timer += 15; // add a 15 second penalty to the timer
+        }
     }
 }
 
@@ -315,13 +350,16 @@ function randomNumber(max) {
 function printTitle(titleContent) {
     var title = document.createElement('h1');
     title.textContent = titleContent;
+    title.classList.add('page-title');
     mainEl.appendChild(title);
 }
 
 function printQuestionTitle(titleContent) {
     var title = document.createElement('h2');
     title.textContent = titleContent;
-    mainEl.appendChild(title);
+    title.classList.add('question-title');
+
+    return title;
 }
 
 printHome();
