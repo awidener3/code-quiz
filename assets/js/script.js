@@ -1,11 +1,15 @@
-var startBtn = document.getElementById('start-button');
-var timerEl = document.getElementById('timer');
-var mainEl = document.getElementById('main');
-var homeLi = document.getElementById('home-link');
-var highscoreLi = document.getElementById('highscore-link')
+// !DOCUMENT SELECTORS
+var startBtn = document.querySelector('#start-button');
+var timerEl = document.querySelector('#timer');
+var mainEl = document.querySelector('#main');
+var homeLi = document.querySelector('#home-link');
+var highscoreLi = document.querySelector('#highscore-link')
 
+// !GLOBAL VARIABLES
 var timerInterval;
 var timer = 0;
+var quizQuestions;
+var quizAnswers;
 
 const questions = [
     'question 1',
@@ -13,7 +17,6 @@ const questions = [
     'question 3',
     'question 4'
 ];
-
 const answers = [
     [['Q1 answer 1', true], ['Q1 answer 2', false], ['Q1 answer 3', false], ['Q1 answer 4', false]],
     [['Q2 answer 1', false], ['Q2 answer 2', true], ['Q2 answer 3', false], ['Q2 answer 4', false]],
@@ -21,10 +24,8 @@ const answers = [
     [['Q4 answer 1', false], ['Q4 answer 2', false], ['Q4 answer 3', false], ['Q4 answer 4', true]],
 ];
 
-// HTML QUIZ
-
+// !HTML QUIZ
 const htmlQuestions = [
-
     'What does HTML stand for?',
     'The <title> element must be located inside...',
     'Which tag is used to create a hyperlink?',
@@ -38,9 +39,7 @@ const htmlQuestions = [
     'Which element is NOT empty/self-closing?'
 
 ];
-
 const htmlAnswers = [
-
     [['Hyper Text Markup Language', true], ['Hot Mail', false], ['How to Make Lasagna', false]],
     [['the <head> element', true], ['the <body> element', false]],
     [['<a>', true], ['<img>', false], ['<dl>', false], ['<link>', false]],
@@ -54,8 +53,7 @@ const htmlAnswers = [
     [['<br>', false], ['<p>', true], ['<img>', false], ['<hr>', false]]
 ];
 
-// CSS QUIZ
-
+// !CSS QUIZ
 const cssQuestions = [
     'Which CSS selector would we use if we wanted to define a style for a unique element?',
     'What does CSS stand for?',
@@ -66,7 +64,6 @@ const cssQuestions = [
     'Which property is used to change the background color?',
     'Which CSS property controls the text size?'
 ];
-
 const cssAnswers = [
     [['id', true], ['text', false], ['class', false]],
     [['Cascading Style Sheets', true], ['Computer Style Sheets', false], ['Colorful Style Sheets', false], ['Creative Style Sheets', false]],
@@ -77,16 +74,13 @@ const cssAnswers = [
     [['background-color', true], ['bgcolor', false], ['color', false]],
     [['text-size', false], ['font-size', true], ['text-style', false], ['font-style', false]]
 ];
-
-// JS QUIZ
-
+// !JS QUIZ
 const javascriptQuestions = [
     'javascript 1',
     'javascript 2',
     'javascript 3',
     'javascript 4'
 ];
-
 const javascriptAnswers = [
     [['javascript1 answer 1', true], ['javascript1 answer 2', false], ['javascript1 answer 3', false], ['javascript1 answer 4', false]],
     [['javascript2 answer 1', false], ['javascript2 answer 2', true], ['javascript2 answer 3', false], ['javascript2 answer 4', false]],
@@ -94,16 +88,12 @@ const javascriptAnswers = [
     [['javascript4 answer 1', false], ['javascript4 answer 2', false], ['javascript4 answer 3', false], ['javascript4 answer 4', true]],
 ];
 
-var quizQuestions;
-var quizAnswers;
 
-// BUILD HOME
+// !HOME
 homeLi.addEventListener('click', printHome);
 
 function printHome() {
     mainEl.textContent = '';
-    stopTime();
-    resetTimer();
     resetQuiz();
 
     printTitle('Coding Quiz Challenge');
@@ -131,7 +121,7 @@ function printHome() {
     var button = document.createElement('button');
     button.textContent = 'Start Quiz!';
     button.setAttribute('id', 'start-button');
-    button.addEventListener('click', startQuiz); // wait for user to click on start button
+    button.addEventListener('click', startQuiz); // ? wait for user to click on start button
     
     mainEl.appendChild(par);
     mainEl.appendChild(categoryDiv);
@@ -144,14 +134,13 @@ function createChoice(choiceName) {
     return choice;
 }
 
-// BUILD HIGHSCORE PAGE
+// !HIGHSCORE
 highscoreLi.addEventListener('click', printHighscores);
 
 function printHighscores() {
     var scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
     mainEl.textContent = ''; // clear the page
-    stopTime();
-    resetTimer();
+
     resetQuiz();
 
     printTitle('Leaderboard')
@@ -179,6 +168,7 @@ function addHighScore() {
 
     var playerName = document.getElementById('initials-input').value.toUpperCase();
     var playerScore = timer;
+
     var player = {
         'name': playerName,
         'score': playerScore
@@ -186,8 +176,8 @@ function addHighScore() {
 
     localStorage.setItem('player', JSON.stringify(player));
 
-    scoreboard.push(player); // ? push player object onto localStorage array
-    scoreboard.sort((a,b) => a.score - b.score); // ? sort the array lowest to highest
+    scoreboard.push(player);                        // ? push player object onto localStorage array
+    scoreboard.sort((a,b) => a.score - b.score);    // ? sort the array lowest to highest
 
     localStorage.setItem('scoreboard', JSON.stringify(scoreboard));
 }
@@ -210,15 +200,15 @@ function printPlayer(index, scores) {
     scores.appendChild(row);
 }
 
-// !QUIZ HANDLING
+// !QUIZ
 
 function startQuiz() {
-    setQuiz();
+    setQuiz();                              // ? Set quiz questions based on selection on homepage
 
-    mainEl.textContent = ''; // clear page
+    mainEl.textContent = '';                // ? clear page
 
-    initializeTimer(); // start timer
-    printQuestion(); // and print the first question
+    initializeTimer();                      // ? start timer
+    printQuestion();                        // ? and print the first question
 }
 
 function setQuiz() {
@@ -239,69 +229,17 @@ function setQuiz() {
     }
 }
 
-function printQuestion() {
-    if (quizQuestions.length === 0) { // check if there are any remaining questions
-        mainEl.textContent = '';
-        return endQuiz(); // if false, end the quiz
-    }
+function resetQuiz() {
+    stopTime();
+    resetTimer();
 
-    randomNum = randomNumber(quizQuestions.length); // generate a random number based on the number of questions available
-
-    mainEl.textContent = ''; // clear the screen
-
-    var card = document.createElement('div');
-    card.classList.add('card');
-
-    var icon = document.createElement('i');
-    icon.classList.add('fas');
-    icon.classList.add('fa-question-circle');
-    icon.classList.add('fa-4x');
-
-    card.appendChild(icon);
-
-    card.appendChild(printQuestionTitle(quizQuestions[randomNum]));
-
-    var answerList = document.createElement('ol');
-
-    for (var i = 0; i < quizAnswers[randomNum].length; i++) {
-        answerList.appendChild(createAnswerChoice(randomNum, i)); // print questions depending on how many there are for that question
-    }
-
-    card.appendChild(answerList);
-
-    mainEl.appendChild(card);
-}
-
-function createAnswerChoice(randomNum, index) {
-    var answer = document.createElement('li');
-
-    answer.classList.add('answer-choice');
-    answer.addEventListener('click', checkAnswer);
-    answer.textContent = quizAnswers[randomNum][index][0];
-    answer.dataset.answer = quizAnswers[randomNum][index][1];
-
-    return answer;
-}
-
-function checkAnswer() {
-    if (this.dataset.answer === 'true') { // check to see if the answer is true or false
-        quizQuestions.splice(randomNum, 1); // remove the question and its corresponding answers from the array
-        quizAnswers.splice(randomNum, 1);
-        this.classList.add('correct');
-
-        setTimeout(printQuestion, 1000); // print the next question
-
-    } else {
-        if (!this.textContent.endsWith('❌')) {
-            this.textContent = this.textContent + ' ' + '❌'; // add an 'x' signifying a wrong answer
-            timer += 15; // add a 15 second penalty to the timer
-        }
-    }
+    quizQuestions = null;
+    quizAnswers = null;
 }
 
 function endQuiz() {
-    stopTime(); // stop the interval
-    quizQuestions = null;
+    stopTime();                                 // ? stop the interval
+    quizQuestions = null;                       // ? remove parsed arrays
     quizAnswers - null;
 
     var affirmations = ['Keep it up, pal!', 'You\'re doing great!', 'I bet you could do this with your eyes closed!', 'I\'m sure everyone would be impressed if they saw you take this quiz!', 'Steve Jobs? Is that you?!', 'Excelsior!']
@@ -339,12 +277,67 @@ function endQuiz() {
     mainEl.appendChild(button);
 };
 
-function resetQuiz() {
-    quizQuestions = null;
-    quizAnswers = null;
+function printQuestion() {
+    if (quizQuestions.length === 0) {       // ? check if there are any remaining questions
+        mainEl.textContent = '';
+        return endQuiz();                   // ? if false, end the quiz
+    }
+
+    randomNum = randomNumber(quizQuestions.length); // ? generate a random number based on the number of questions available
+
+    mainEl.textContent = '';                // ? clear the screen
+
+    var card = document.createElement('div');
+    card.classList.add('card');
+
+    var icon = document.createElement('i');
+    icon.classList.add('fas');
+    icon.classList.add('fa-question-circle');
+    icon.classList.add('fa-4x');
+
+    card.appendChild(icon);
+
+    card.appendChild(printQuestionTitle(quizQuestions[randomNum]));
+
+    var answerList = document.createElement('ol');
+
+    for (var i = 0; i < quizAnswers[randomNum].length; i++) {
+        answerList.appendChild(createAnswerChoice(randomNum, i)); // ? print questions depending on how many there are for that question
+    }
+
+    card.appendChild(answerList);
+
+    mainEl.appendChild(card);
 }
 
-// !TIMER HANDLING
+function createAnswerChoice(randomNum, index) {
+    var answer = document.createElement('li');
+
+    answer.classList.add('answer-choice');
+    answer.addEventListener('click', checkAnswer);
+    answer.textContent = quizAnswers[randomNum][index][0];
+    answer.dataset.answer = quizAnswers[randomNum][index][1];
+
+    return answer;
+}
+
+function checkAnswer() {
+    if (this.dataset.answer === 'true') {       // ? check to see if the answer is true or false
+        quizQuestions.splice(randomNum, 1);     // ? remove the question and its corresponding answers from the array
+        quizAnswers.splice(randomNum, 1);
+        this.classList.add('correct');          // ? add correct class for pseudo element
+
+        setTimeout(printQuestion, 1000);        // ? print the next question
+
+    } else {
+        if (!this.textContent.endsWith('❌')) {
+            this.textContent = this.textContent + ' ' + '❌'; // ? add an 'x' signifying a wrong answer
+            timer += 15;                        // ? add a 15 second penalty to the timer
+        }
+    }
+}
+
+// !TIMER
 function initializeTimer() {
     if (!timerInterval) {
         timerInterval = setInterval(startTime, 1000);
@@ -366,7 +359,7 @@ function resetTimer() {
     timerEl.textContent = timer;
 }
 
-// UTILITY
+// !UTILITY
 function randomNumber(max) {
     return Math.floor(Math.random() * max);
 }
