@@ -7,7 +7,7 @@ var highscoreLi = document.querySelector('#highscore-link')
 
 // !GLOBAL VARIABLES
 var timerInterval;
-var timer = 0;
+var secondsLeft;
 var quizQuestions;
 var quizAnswers;
 
@@ -135,9 +135,9 @@ function createChoice(choiceName) {
 }
 
 // !HIGHSCORE
-highscoreLi.addEventListener('click', printHighscores);
+highscoreLi.addEventListener('click', renderHighScores);
 
-function printHighscores() {
+function renderHighScores() {
     var scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
     mainEl.textContent = ''; // clear the page
 
@@ -149,7 +149,7 @@ function printHighscores() {
     scores.setAttribute('id', 'scoreboard');
 
     for (var i = 0; i < scoreboard.length; i++) {
-        printPlayer(i, scores);
+        renderPlayer(i, scores);
     }
 
     var button = document.createElement('button');
@@ -167,22 +167,20 @@ function addHighScore() {
     }
 
     var playerName = document.getElementById('initials-input').value.toUpperCase();
-    var playerScore = timer;
+    var playerScore = secondsLeft;
 
     var player = {
         'name': playerName,
         'score': playerScore
     };
 
-    localStorage.setItem('player', JSON.stringify(player));
-
     scoreboard.push(player);                        // ? push player object onto localStorage array
-    scoreboard.sort((a,b) => a.score - b.score);    // ? sort the array lowest to highest
+    scoreboard.sort((a,b) => b.score - a.score);    // ? sort the array lowest to highest
 
     localStorage.setItem('scoreboard', JSON.stringify(scoreboard));
 }
 
-function printPlayer(index, scores) {
+function renderPlayer(index, scores) {
     var scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
 
     var row = document.createElement('div');
@@ -238,6 +236,8 @@ function resetQuiz() {
 }
 
 function endQuiz() {
+    mainEl.textContent = '';
+
     stopTime();                                 // ? stop the interval
     quizQuestions = null;                       // ? remove parsed arrays
     quizAnswers - null;
@@ -248,7 +248,7 @@ function endQuiz() {
     title.textContent = 'Quiz Over!';
 
     var results = document.createElement('p');
-    results.textContent = 'You scored ' + timer + ' points. ' + affirmations[randomNumber(affirmations.length)];
+    results.textContent = 'You scored ' + secondsLeft + ' points. ' + affirmations[randomNumber(affirmations.length)];
 
     var enterInitials = document.createElement('p');
     enterInitials.textContent = 'Please enter your initials:'
@@ -266,7 +266,7 @@ function endQuiz() {
     button.addEventListener('click', function () {
         if (initialsInput.value) {
             addHighScore();
-            printHighscores();
+            renderHighScores();
         }
     })
 
@@ -327,26 +327,36 @@ function checkAnswer() {
         quizAnswers.splice(randomNum, 1);
         this.classList.add('correct');          // ? add correct class for pseudo element
 
-        setTimeout(printQuestion, 1000);        // ? print the next question
+        setTimeout(printQuestion, 500);        // ? print the next question
 
     } else {
         if (!this.textContent.endsWith('❌')) {
             this.textContent = this.textContent + ' ' + '❌'; // ? add an 'x' signifying a wrong answer
-            timer += 15;                        // ? add a 15 second penalty to the timer
+            secondsLeft -= 15;                        // ? add a 15 second penalty to the timer
         }
     }
 }
 
 // !TIMER
 function initializeTimer() {
-    if (!timerInterval) {
+    secondsLeft = 75;
+
+   if (!timerInterval) {
         timerInterval = setInterval(startTime, 1000);
     }
 }
 
 function startTime() {
-    timer++;
-    timerEl.textContent = timer;
+    secondsLeft--;
+    timerEl.textContent = secondsLeft;
+
+    if(secondsLeft <= 0) {
+        stopTime();
+        secondsLeft = 0;
+        timerEl.textContent = secondsLeft;
+        timerInterval = null;
+        endQuiz();
+    }
 }
 
 function stopTime() {
@@ -355,8 +365,8 @@ function stopTime() {
 }
 
 function resetTimer() {
-    timer = 0;
-    timerEl.textContent = timer;
+    secondsLeft = 0;
+    timerEl.textContent = secondsLeft;
 }
 
 // !UTILITY
