@@ -88,6 +88,9 @@ const javascriptAnswers = [
     [['javascript4 answer 1', false], ['javascript4 answer 2', false], ['javascript4 answer 3', false], ['javascript4 answer 4', true]],
 ];
 
+function init() {
+    printHome();
+}
 
 // !HOME
 homeLi.addEventListener('click', printHome);
@@ -183,19 +186,14 @@ function addHighScore() {
 function renderPlayer(index, scores) {
     var scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
 
-    var row = document.createElement('div');
-    row.classList.add('score-row');
+    var playerList = document.createElement('ul');
 
-    var playerInitials = document.createElement('p');
-    playerInitials.textContent = scoreboard[index].name;
+    var playerScore = document.createElement('li');
+    playerScore.textContent = `${scoreboard[index].name} -- ${scoreboard[index].score}`;
 
-    var playerScore = document.createElement('p');
-    playerScore.textContent = scoreboard[index].score;
+    playerList.appendChild(playerScore);
 
-    row.appendChild(playerInitials);
-    row.appendChild(playerScore);
-
-    scores.appendChild(row);
+    scores.appendChild(playerList);
 }
 
 // !QUIZ
@@ -389,4 +387,4 @@ function printQuestionTitle(titleContent) {
     return title;
 }
 
-printHome();
+init();

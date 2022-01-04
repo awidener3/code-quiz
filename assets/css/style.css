@@ -209,7 +209,3 @@ footer a img:hover {
 #scoreboard p {
     margin: 25px;
 }
-
-.score-row {
-    display: flex;
-}
