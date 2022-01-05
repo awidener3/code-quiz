@@ -34,6 +34,10 @@ h1 {
     font-size: 250%;
 }
 
+p {
+    font-size: 125%;
+}
+
 /* HEADER */
 
 header {
@@ -74,6 +78,10 @@ main {
     align-items: center;
 
     padding: 24px;
+
+    margin: 0 auto;
+
+    max-width: 575px;
 }
 
 button {
@@ -97,7 +105,8 @@ button:hover {
 }
 
 .selection-div {
-    border: 2px dashed black;
+    border: 2px dashed #929292;
+    border-radius: 8px;
     padding: 12px 20px;
     margin: 12px;
 }
@@ -132,7 +141,6 @@ select {
 
 .card ol {
     margin-left: 48px;
-    /* line-height: 2.5; */
 }
 
 .card .answer-choice {
@@ -210,11 +218,27 @@ footer a img:hover {
     margin: 25px;
 }
 
-.scoreboard-items {
+.scoreboard-list {
     list-style-type: none;
+    width: 250px;
     font-size: 150%;
+    border: 2px solid #c7c7c7;
+    border-radius: 8px;
 }
 
-.scoreboard-item:nth-child(even) {
-    background-color: blue
+.scoreboard-item {
+    padding: 5px;
+    text-align: center;
+}
+
+.scoreboard-item:nth-child(odd) {
+    background-color: #c7c7c7;
+}
+
+.scoreboard-item:first-child {
+    border-radius: 6px 6px 0 0;
+}
+
+.scoreboard-item:last-child {
+    border-radius: 0 0 6px 6px;
 }

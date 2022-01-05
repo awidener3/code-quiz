@@ -8,7 +8,6 @@ let highscoreLi = document.querySelector('#highscore-link')
 // !GLOBAL VARIABLES
 let timerInterval;
 let secondsLeft;
-let leaderboardSelection = document.querySelector('#leaderboard-select');
 let quizSelection;
 let quizQuestions;
 let quizAnswers;
@@ -37,8 +36,6 @@ const htmlQuestions = [
     'Which of the following HTML tags is NOT valid?',
     'Which of the following is NOT an HTML attribute?',
     'What HTML form input must be used to present multiple options, but select only one?',
-    'Which of the following tags is used to create an unordered list?',
-    'Which element is NOT empty/self-closing?'
 
 ];
 const htmlAnswers = [
@@ -51,8 +48,6 @@ const htmlAnswers = [
     [['<h1>', false], ['<h8>', true], ['<h4>', false], ['<h5>', false]],
     [['alt', false], ['target', false], ['fontSize', true], ['id', false]],
     [['<input type="text">', false], ['<input type="radio">', true], ['<input type="checkbox">', false]],
-    [['<ul>', true], ['<ol>', false]],
-    [['<br>', false], ['<p>', true], ['<img>', false], ['<hr>', false]]
 ];
 
 // !CSS QUIZ
@@ -100,48 +95,85 @@ const javascriptAnswers = [
     [['//This is a comment', true], ['\'This is a comment', false], ['<!--This is a comment-->', false]]
 ];
 
-// ? runs on page load
+// runs on page load
 function init() {
-    printHome();
+    renderHome();
 }
 
-// !HOME
-homeLi.addEventListener('click', printHome);
+// !NAVBAR //
+// ----------------------------------------------------------- //
+homeLi.addEventListener('click', renderHome);
+highscoreLi.addEventListener('click', renderScoreboard);
 
-function printHome() {
-    mainEl.textContent = '';
+function initializeTimer() {
+    secondsLeft = 75;
+
+    if (!timerInterval) {
+        timerInterval = setInterval(function () {
+            secondsLeft--;
+            timerEl.textContent = secondsLeft;
+
+            if (secondsLeft <= 0) {
+                endQuiz();
+            }
+        }, 1000);
+    }
+}
+
+function stopTime() {
+    clearInterval(timerInterval);
+    timerInterval = null;
+}
+
+function resetTimer() {
+    secondsLeft = 0;
+    timerEl.textContent = secondsLeft;
+}
+
+// !HOMEPAGE RENDERING //
+// ----------------------------------------------------------- //
+function renderHome() {
     resetQuiz();
+    // check if timer is initialized
+    if (timerInterval) {
+        stopTime();
+    }
+
+    mainEl.textContent = '';
 
     renderTitle('Coding Quiz Challenge');
 
     let par = document.createElement('p');
-    par.textContent = 'Prepare thyself! For a quiz of immeasurable difficulty awaits!';
+    par.textContent = 'Select a category below for the language you would like to take a quiz on. You will have 75 seconds to complete all 9 questions! At the end, enter your initials to be added to the leaderboard.';
 
     let categoryDiv = document.createElement('div');
     categoryDiv.classList.add('selection-div');
 
-    let label = document.createElement('label');
-    label.textContent = 'Select a Category:'
+    let categoryLabel = document.createElement('label');
+    categoryLabel.textContent = 'Select a Category:'
 
-    let select = document.createElement('select');
-    select.setAttribute('id', 'quiz-select')
+    let categorySelect = document.createElement('select');
+    categorySelect.setAttribute('id', 'quiz-select')
 
-    select.appendChild(createChoice('HTML Basics'));
-    select.appendChild(createChoice('CSS Basics'));
-    select.appendChild(createChoice('JavaScript Basics'));
-    select.appendChild(createChoice('Testing'));
+    categorySelect.appendChild(createChoice('HTML Basics'));
+    categorySelect.appendChild(createChoice('CSS Basics'));
+    categorySelect.appendChild(createChoice('JavaScript Basics'));
 
-    categoryDiv.appendChild(label);
-    categoryDiv.appendChild(select);
+    //!TESTING
+    // categorySelect.appendChild(createChoice('Testing'));
+    //!
 
-    let button = document.createElement('button');
-    button.textContent = 'Start Quiz!';
-    button.setAttribute('id', 'start-button');
-    button.addEventListener('click', startQuiz); // ? wait for user to click on start button
+    categoryDiv.appendChild(categoryLabel);
+    categoryDiv.appendChild(categorySelect);
+
+    let startButton = document.createElement('button');
+    startButton.textContent = 'Start Quiz!';
+    startButton.setAttribute('id', 'start-button');
+    startButton.addEventListener('click', startQuiz);
 
     mainEl.appendChild(par);
     mainEl.appendChild(categoryDiv);
-    mainEl.appendChild(button);
+    mainEl.appendChild(startButton);
 }
 
 function createChoice(choiceName) {
@@ -150,35 +182,66 @@ function createChoice(choiceName) {
     return choice;
 }
 
-// !HIGHSCORE
-highscoreLi.addEventListener('click', renderScoreboard);
-
+// !HIGHSCORE PAGE RENDERING //
+// ----------------------------------------------------------- //
 function renderScoreboard() {
     mainEl.textContent = '';
     resetQuiz();
 
-    let scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
-
-    renderTitle('Leaderboard')
-
-    let scores = document.createElement('div');
-    scores.setAttribute('id', 'scoreboard');
-
-    for (var i = 0; i < scoreboard.length; i++) {
-        renderPlayer(i, scores);
+    // check if timer is initialized
+    if (timerInterval) {
+        stopTime();
     }
 
-    let button = document.createElement('button');
-    button.textContent = 'Back to Home';
-    button.addEventListener('click', printHome);
+    let scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
+    
+    renderTitle('Leaderboard')
 
-    mainEl.appendChild(scores);
-    mainEl.appendChild(button)
+    if (!scoreboard) {
+        let par = document.createElement('p');
+        par.textContent = 'It looks like there are no high scores yet! Will you be the first one?'
+        mainEl.appendChild(par);
+       
+        let button = document.createElement('button');
+        button.textContent = 'Back to Home';
+        button.addEventListener('click', renderHome);
+        mainEl.appendChild(button)
+
+        return
+    }
+
+
+    let playerUl = document.createElement('ul');
+    playerUl.classList.add('scoreboard-list');
+
+    for (let i = 0; i < scoreboard.length; i++) {
+        let playerLi = document.createElement('li');
+        playerLi.classList.add('scoreboard-item');
+        playerLi.textContent = `${scoreboard[i].name} -- ${scoreboard[i].score}`;
+        playerUl.appendChild(playerLi);
+    }
+
+
+    let homeButton = document.createElement('button');
+    homeButton.textContent = 'Back to Home';
+    homeButton.addEventListener('click', renderHome);
+
+    let resetButton = document.createElement('button');
+    resetButton.textContent = 'Reset Highscores'
+    resetButton.addEventListener('click', function() {
+        localStorage.clear();
+        renderScoreboard();
+    });
+
+    mainEl.appendChild(playerUl);
+    mainEl.appendChild(homeButton);
+    mainEl.appendChild(resetButton);
 }
 
 function addHighScore() {
     let scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
 
+    // validation of empty scoreboard
     if (scoreboard == null) {
         scoreboard = [];
     }
@@ -191,36 +254,24 @@ function addHighScore() {
         'score': playerScore
     };
 
-    scoreboard.push(player);                        // ? push player object onto localStorage array
-    scoreboard.sort((a, b) => b.score - a.score);    // ? sort the array lowest to highest
-
+    // push player object onto localStorage array, then sort array highest to lowest
+    scoreboard.push(player);                      
+    scoreboard.sort((a, b) => b.score - a.score); 
     localStorage.setItem('scoreboard', JSON.stringify(scoreboard));
 }
 
-function renderPlayer(index, scores) {
-    let scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
+// !QUIZ RENDERING + HANDLING//
+// ----------------------------------------------------------- //
 
-    let playerList = document.createElement('ul');
-    playerList.classList.add('scoreboard-items');
-
-    let playerScore = document.createElement('li');
-    playerScore.classList.add('scoreboard-item');
-    playerScore.textContent = `${scoreboard[index].name} -- ${scoreboard[index].score}`;
-
-    playerList.appendChild(playerScore);
-
-    scores.appendChild(playerList);
-}
-
-// !QUIZ
-
+// sets questions based on home selection, starts timer, and prints the first question
 function startQuiz() {
-    setQuiz();                              // ? Set quiz questions based on selection on homepage
-    mainEl.textContent = '';                // ? clear page
-    initializeTimer();                      // ? start timer
-    renderQuestion();                        // ? and print the first question
+    setQuiz();
+    mainEl.textContent = '';
+    initializeTimer(); 
+    renderQuestion();
 }
 
+// sets quizQuestions + quizAnswers as the chosen array
 function setQuiz() {
     quizSelection = document.querySelector('#quiz-select').value;
 
@@ -243,24 +294,26 @@ function resetQuiz() {
     quizQuestions = null;
     quizAnswers = null;
     resetTimer();
-
 }
 
 function endQuiz() {
-    
+    if (secondsLeft < 0) {
+        secondsLeft = 0;
+        timerEl.textContent = secondsLeft;
+    }
     stopTime();
 
     let affirmations = ['Keep it up, pal!', 'You\'re doing great!', 'I bet you could do this with your eyes closed!', 'I\'m sure everyone would be impressed if they saw you take this quiz!', 'Steve Jobs? Is that you?!', 'Excelsior!']
 
-    let title = document.createElement('h1');
-    title.textContent = 'Quiz Over!';
+    let pageTitle = document.createElement('h1');
+    pageTitle.textContent = 'Quiz Over!';
 
-    let results = document.createElement('p');
-    results.textContent = `You scored ${secondsLeft} points. ${affirmations[randomNumber(affirmations.length)]}`;
+    let quizResults = document.createElement('p');
+    quizResults.textContent = `You scored ${secondsLeft} points. ${affirmations[randomNumber(affirmations.length)]}`;
 
-    let enterInitials = document.createElement('p');
-    enterInitials.textContent = 'Please enter your initials:'
-    enterInitials.classList.add('enter-initials')
+    let initialsPrompt = document.createElement('p');
+    initialsPrompt.textContent = 'Please enter your initials:'
+    initialsPrompt.classList.add('enter-initials')
 
     let initialsInput = document.createElement('input');
     initialsInput.classList.add('initials-input');
@@ -268,10 +321,10 @@ function endQuiz() {
     initialsInput.maxLength = 3;
     initialsInput.size = 4;
 
-    let button = document.createElement('button');
-    button.textContent = 'Go to Highscores';
+    let highscoreButton = document.createElement('button');
+    highscoreButton.textContent = 'Go to Highscores';
 
-    button.addEventListener('click', function () {
+    highscoreButton.addEventListener('click', function () {
         if (initialsInput.value) {
             addHighScore();
             resetQuiz();
@@ -279,36 +332,34 @@ function endQuiz() {
         }
     })
 
-
     mainEl.textContent = '';
 
-    mainEl.appendChild(title);
-    mainEl.appendChild(results);
-    mainEl.appendChild(enterInitials);
+    mainEl.appendChild(pageTitle);
+    mainEl.appendChild(quizResults);
+    mainEl.appendChild(initialsPrompt);
     mainEl.appendChild(initialsInput);
-    mainEl.appendChild(button);
+    mainEl.appendChild(highscoreButton);
 };
 
 function renderQuestion() {
     // check if there are any remaining questions
     if (quizQuestions.length === 0) {
-
         return endQuiz();
     }
 
     mainEl.textContent = '';
-
-    // generate a random number based on the number of questions available
-    randomNum = randomNumber(quizQuestions.length);
-
+    
     let card = document.createElement('div');
     card.classList.add('card');
-
+    
     let icon = document.createElement('i');
     icon.classList.add('fas');
     icon.classList.add('fa-question-circle');
     icon.classList.add('fa-4x');
     card.appendChild(icon);
+
+    // generate a random number based on the number of questions available
+    randomNum = randomNumber(quizQuestions.length);
 
     card.appendChild(renderQuestionTitle(quizQuestions[randomNum]));
 
@@ -338,9 +389,10 @@ function createAnswerChoice(randomNum, index) {
 function checkAnswer() {
     // check to see if the answer is correct, then remove it from its array
     if (this.dataset.answer === 'true') {
+        this.classList.add('correct');
+
         quizQuestions.splice(randomNum, 1);
         quizAnswers.splice(randomNum, 1);
-        this.classList.add('correct');
 
         setTimeout(renderQuestion, 500);
     } else {
@@ -350,32 +402,6 @@ function checkAnswer() {
             secondsLeft -= 15;
         }
     }
-}
-
-// !TIMER
-function initializeTimer() {
-    secondsLeft = 75;
-
-    if (!timerInterval) {
-        timerInterval = setInterval(function () {
-            secondsLeft--;
-            timerEl.textContent = secondsLeft;
-
-            if (secondsLeft <= 0) {
-                endQuiz();
-            }
-        }, 1000);
-    }
-}
-
-function stopTime() {
-    clearInterval(timerInterval);
-    timerInterval = null;
-}
-
-function resetTimer() {
-    secondsLeft = 0;
-    timerEl.textContent = secondsLeft;
 }
 
 // !UTILITY

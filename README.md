@@ -11,7 +11,7 @@ Select a quiz category you would like to take. Then, click the "Start Quiz!" but
 The quiz is over when you have completed all questions correctly, or the timer reaches 0. You will then be asked to enter your initials, where you will then be added and sorted into the leaderboards.
 
 ## 🔍 Preview
-![A gif of the quiz in action!](assets/images/code-quiz-preview.gif)
+![A gif of the quiz in action!](assets/images/coding-quiz-preview.gif)
 
 ## 📝 User Story
 
