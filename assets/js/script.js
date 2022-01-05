@@ -8,7 +8,8 @@ let highscoreLi = document.querySelector('#highscore-link')
 // !GLOBAL VARIABLES
 let timerInterval;
 let secondsLeft;
-let quizSelection
+let leaderboardSelection = document.querySelector('#leaderboard-select');
+let quizSelection;
 let quizQuestions;
 let quizAnswers;
 
@@ -112,7 +113,7 @@ function printHome() {
     resetQuiz();
 
     renderTitle('Coding Quiz Challenge');
-    
+
     let par = document.createElement('p');
     par.textContent = 'Prepare thyself! For a quiz of immeasurable difficulty awaits!';
 
@@ -124,7 +125,7 @@ function printHome() {
 
     let select = document.createElement('select');
     select.setAttribute('id', 'quiz-select')
-    
+
     select.appendChild(createChoice('HTML Basics'));
     select.appendChild(createChoice('CSS Basics'));
     select.appendChild(createChoice('JavaScript Basics'));
@@ -132,12 +133,12 @@ function printHome() {
 
     categoryDiv.appendChild(label);
     categoryDiv.appendChild(select);
-    
+
     let button = document.createElement('button');
     button.textContent = 'Start Quiz!';
     button.setAttribute('id', 'start-button');
     button.addEventListener('click', startQuiz); // ? wait for user to click on start button
-    
+
     mainEl.appendChild(par);
     mainEl.appendChild(categoryDiv);
     mainEl.appendChild(button);
@@ -150,14 +151,14 @@ function createChoice(choiceName) {
 }
 
 // !HIGHSCORE
-highscoreLi.addEventListener('click', renderHighScores);
+highscoreLi.addEventListener('click', renderScoreboard);
 
-function renderHighScores() {
+function renderScoreboard() {
     mainEl.textContent = '';
     resetQuiz();
 
     let scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
-    
+
     renderTitle('Leaderboard')
 
     let scores = document.createElement('div');
@@ -177,9 +178,9 @@ function renderHighScores() {
 
 function addHighScore() {
     let scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
-   
+
     if (scoreboard == null) {
-        scoreboard = [];    
+        scoreboard = [];
     }
 
     let playerName = document.getElementById('initials-input').value.toUpperCase();
@@ -191,7 +192,7 @@ function addHighScore() {
     };
 
     scoreboard.push(player);                        // ? push player object onto localStorage array
-    scoreboard.sort((a,b) => b.score - a.score);    // ? sort the array lowest to highest
+    scoreboard.sort((a, b) => b.score - a.score);    // ? sort the array lowest to highest
 
     localStorage.setItem('scoreboard', JSON.stringify(scoreboard));
 }
@@ -200,8 +201,10 @@ function renderPlayer(index, scores) {
     let scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
 
     let playerList = document.createElement('ul');
+    playerList.classList.add('scoreboard-items');
 
     let playerScore = document.createElement('li');
+    playerScore.classList.add('scoreboard-item');
     playerScore.textContent = `${scoreboard[index].name} -- ${scoreboard[index].score}`;
 
     playerList.appendChild(playerScore);
@@ -218,9 +221,9 @@ function startQuiz() {
     renderQuestion();                        // ? and print the first question
 }
 
-function setQuiz() {   
+function setQuiz() {
     quizSelection = document.querySelector('#quiz-select').value;
-    
+
     if (quizSelection === 'HTML Basics') {
         quizQuestions = JSON.parse(JSON.stringify(htmlQuestions));
         quizAnswers = JSON.parse(JSON.stringify(htmlAnswers));
@@ -237,17 +240,15 @@ function setQuiz() {
 }
 
 function resetQuiz() {
-
-    resetTimer();
-
     quizQuestions = null;
     quizAnswers = null;
+    resetTimer();
+
 }
 
 function endQuiz() {
-    mainEl.textContent = '';
-
-    resetQuiz()
+    
+    stopTime();
 
     let affirmations = ['Keep it up, pal!', 'You\'re doing great!', 'I bet you could do this with your eyes closed!', 'I\'m sure everyone would be impressed if they saw you take this quiz!', 'Steve Jobs? Is that you?!', 'Excelsior!']
 
@@ -273,9 +274,13 @@ function endQuiz() {
     button.addEventListener('click', function () {
         if (initialsInput.value) {
             addHighScore();
-            renderHighScores();
+            resetQuiz();
+            renderScoreboard();
         }
     })
+
+
+    mainEl.textContent = '';
 
     mainEl.appendChild(title);
     mainEl.appendChild(results);
@@ -286,14 +291,15 @@ function endQuiz() {
 
 function renderQuestion() {
     // check if there are any remaining questions
-    if (quizQuestions.length === null || quizQuestions.length === 0) {
-        return endQuiz();            
+    if (quizQuestions.length === 0) {
+
+        return endQuiz();
     }
 
     mainEl.textContent = '';
 
     // generate a random number based on the number of questions available
-    randomNum = randomNumber(quizQuestions.length); 
+    randomNum = randomNumber(quizQuestions.length);
 
     let card = document.createElement('div');
     card.classList.add('card');
@@ -310,7 +316,7 @@ function renderQuestion() {
 
     // print questions depending on how many there are for that question
     for (let i = 0; i < quizAnswers[randomNum].length; i++) {
-        listOptions.appendChild(createAnswerChoice(randomNum, i)); 
+        listOptions.appendChild(createAnswerChoice(randomNum, i));
     }
 
     card.appendChild(listOptions);
@@ -331,18 +337,17 @@ function createAnswerChoice(randomNum, index) {
 
 function checkAnswer() {
     // check to see if the answer is correct, then remove it from its array
-    if (this.dataset.answer === 'true') {      
-        quizQuestions.splice(randomNum, 1);     
+    if (this.dataset.answer === 'true') {
+        quizQuestions.splice(randomNum, 1);
         quizAnswers.splice(randomNum, 1);
-        this.classList.add('correct'); 
+        this.classList.add('correct');
 
         setTimeout(renderQuestion, 500);
-
     } else {
         // notify user of wrong answer, then add 15 second penalty
         if (!this.textContent.endsWith('❌')) {
             this.textContent = `${this.textContent} ❌`;
-            secondsLeft -= 15;                        
+            secondsLeft -= 15;
         }
     }
 }
@@ -351,20 +356,21 @@ function checkAnswer() {
 function initializeTimer() {
     secondsLeft = 75;
 
-   if (!timerInterval) {
-        timerInterval = setInterval(function() {
+    if (!timerInterval) {
+        timerInterval = setInterval(function () {
             secondsLeft--;
-    
-            if(secondsLeft <= 0) {
-                secondsLeft = 0;
-                clearInterval(timerInterval);
-                timerInterval = null;
+            timerEl.textContent = secondsLeft;
+
+            if (secondsLeft <= 0) {
                 endQuiz();
             }
-
-            timerEl.textContent = secondsLeft;
         }, 1000);
     }
+}
+
+function stopTime() {
+    clearInterval(timerInterval);
+    timerInterval = null;
 }
 
 function resetTimer() {
