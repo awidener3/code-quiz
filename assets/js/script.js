@@ -1,15 +1,16 @@
 // !DOCUMENT SELECTORS
-var startBtn = document.querySelector('#start-button');
-var timerEl = document.querySelector('#timer');
-var mainEl = document.querySelector('#main');
-var homeLi = document.querySelector('#home-link');
-var highscoreLi = document.querySelector('#highscore-link')
+let startBtn = document.querySelector('#start-button');
+let timerEl = document.querySelector('#timer');
+let mainEl = document.querySelector('#main');
+let homeLi = document.querySelector('#home-link');
+let highscoreLi = document.querySelector('#highscore-link')
 
 // !GLOBAL VARIABLES
-var timerInterval;
-var secondsLeft;
-var quizQuestions;
-var quizAnswers;
+let timerInterval;
+let secondsLeft;
+let quizSelection
+let quizQuestions;
+let quizAnswers;
 
 const questions = [
     'question 1',
@@ -76,18 +77,29 @@ const cssAnswers = [
 ];
 // !JS QUIZ
 const javascriptQuestions = [
-    'javascript 1',
-    'javascript 2',
-    'javascript 3',
-    'javascript 4'
+    'Inside which HTML element do we put the JavaScript?',
+    'Where is the correct place to insert JavaScript?',
+    'What is the correct syntax for referring to an external script called "script.js"?',
+    'How would you write "Hello World" in an alert box?',
+    'Which of the following is a correct way to create a function in JavaScript?',
+    'How do you call a function named "myFunction"?',
+    'How do you write an IF statement in JavaScript?',
+    'How do you write an IF statement for executing some code if "i" is NOT equal to 5?',
+    'How can you add a comment in JavaScript?'
 ];
 const javascriptAnswers = [
-    [['javascript1 answer 1', true], ['javascript1 answer 2', false], ['javascript1 answer 3', false], ['javascript1 answer 4', false]],
-    [['javascript2 answer 1', false], ['javascript2 answer 2', true], ['javascript2 answer 3', false], ['javascript2 answer 4', false]],
-    [['javascript3 answer 1', false], ['javascript3 answer 2', false], ['javascript3 answer 3', true], ['javascript3 answer 4', false]],
-    [['javascript4 answer 1', false], ['javascript4 answer 2', false], ['javascript4 answer 3', false], ['javascript4 answer 4', true]],
+    [['<scripting>', false], ['<javascript>', false], ['<script>', true], ['<js>', false]],
+    [['Both the <head> section and the <body> section are correct', true], ['The <body> section', false], ['The <head> section', false]],
+    [['<script src="script.js">', true], ['<script href="script.js">', false], ['<script name="script.js">', false]],
+    [['alert("Hello World");', true], ['alertBox("Hello World")', false], ['msg("Hello World");', false], ['msgBox("Hello World");', false]],
+    [['function:myFunction() {}', false], ['function = myFunction() {}', false], ['function myFunction() {}', true]],
+    [['call myFunction()', false], ['myFunction()', true], ['call function myFunction()', false]],
+    [['if i = 5 {}', false], ['if i == 5 then {}', false], ['if i = 5 then {}', false], ['if (i == 5) {}', true]],
+    [['if i <> 5', false], ['if (i <> 5)', false], ['if i=! 5 then', false], ['if (i !== 5)', true]],
+    [['//This is a comment', true], ['\'This is a comment', false], ['<!--This is a comment-->', false]]
 ];
 
+// ? runs on page load
 function init() {
     printHome();
 }
@@ -99,19 +111,19 @@ function printHome() {
     mainEl.textContent = '';
     resetQuiz();
 
-    printTitle('Coding Quiz Challenge');
+    renderTitle('Coding Quiz Challenge');
     
-    var par = document.createElement('p');
+    let par = document.createElement('p');
     par.textContent = 'Prepare thyself! For a quiz of immeasurable difficulty awaits!';
 
-    var categoryDiv = document.createElement('div');
+    let categoryDiv = document.createElement('div');
     categoryDiv.classList.add('selection-div');
 
-    var label = document.createElement('label');
+    let label = document.createElement('label');
     label.textContent = 'Select a Category:'
 
-    var select = document.createElement('select');
-    select.setAttribute('id', 'select')
+    let select = document.createElement('select');
+    select.setAttribute('id', 'quiz-select')
     
     select.appendChild(createChoice('HTML Basics'));
     select.appendChild(createChoice('CSS Basics'));
@@ -121,7 +133,7 @@ function printHome() {
     categoryDiv.appendChild(label);
     categoryDiv.appendChild(select);
     
-    var button = document.createElement('button');
+    let button = document.createElement('button');
     button.textContent = 'Start Quiz!';
     button.setAttribute('id', 'start-button');
     button.addEventListener('click', startQuiz); // ? wait for user to click on start button
@@ -132,7 +144,7 @@ function printHome() {
 }
 
 function createChoice(choiceName) {
-    var choice = document.createElement('option');
+    let choice = document.createElement('option');
     choice.textContent = choiceName;
     return choice;
 }
@@ -141,21 +153,21 @@ function createChoice(choiceName) {
 highscoreLi.addEventListener('click', renderHighScores);
 
 function renderHighScores() {
-    var scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
-    mainEl.textContent = ''; // clear the page
-
+    mainEl.textContent = '';
     resetQuiz();
 
-    printTitle('Leaderboard')
+    let scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
+    
+    renderTitle('Leaderboard')
 
-    var scores = document.createElement('div');
+    let scores = document.createElement('div');
     scores.setAttribute('id', 'scoreboard');
 
     for (var i = 0; i < scoreboard.length; i++) {
         renderPlayer(i, scores);
     }
 
-    var button = document.createElement('button');
+    let button = document.createElement('button');
     button.textContent = 'Back to Home';
     button.addEventListener('click', printHome);
 
@@ -164,15 +176,16 @@ function renderHighScores() {
 }
 
 function addHighScore() {
-    var scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
+    let scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
+   
     if (scoreboard == null) {
         scoreboard = [];    
     }
 
-    var playerName = document.getElementById('initials-input').value.toUpperCase();
-    var playerScore = secondsLeft;
+    let playerName = document.getElementById('initials-input').value.toUpperCase();
+    let playerScore = secondsLeft;
 
-    var player = {
+    let player = {
         'name': playerName,
         'score': playerScore
     };
@@ -184,11 +197,11 @@ function addHighScore() {
 }
 
 function renderPlayer(index, scores) {
-    var scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
+    let scoreboard = JSON.parse(localStorage.getItem('scoreboard'));
 
-    var playerList = document.createElement('ul');
+    let playerList = document.createElement('ul');
 
-    var playerScore = document.createElement('li');
+    let playerScore = document.createElement('li');
     playerScore.textContent = `${scoreboard[index].name} -- ${scoreboard[index].score}`;
 
     playerList.appendChild(playerScore);
@@ -200,23 +213,21 @@ function renderPlayer(index, scores) {
 
 function startQuiz() {
     setQuiz();                              // ? Set quiz questions based on selection on homepage
-
     mainEl.textContent = '';                // ? clear page
-
     initializeTimer();                      // ? start timer
-    printQuestion();                        // ? and print the first question
+    renderQuestion();                        // ? and print the first question
 }
 
-function setQuiz() {
-    var selection = document.getElementById('select');
+function setQuiz() {   
+    quizSelection = document.querySelector('#quiz-select').value;
     
-    if (selection.value === 'HTML Basics') {
+    if (quizSelection === 'HTML Basics') {
         quizQuestions = JSON.parse(JSON.stringify(htmlQuestions));
         quizAnswers = JSON.parse(JSON.stringify(htmlAnswers));
-    } else if (selection.value === 'CSS Basics') {
+    } else if (quizSelection === 'CSS Basics') {
         quizQuestions = JSON.parse(JSON.stringify(cssQuestions));
         quizAnswers = JSON.parse(JSON.stringify(cssAnswers));
-    } else if (selection.value === 'JavaScript Basics') {
+    } else if (quizSelection === 'JavaScript Basics') {
         quizQuestions = JSON.parse(JSON.stringify(javascriptQuestions));
         quizAnswers = JSON.parse(JSON.stringify(javascriptAnswers));
     } else {
@@ -226,7 +237,7 @@ function setQuiz() {
 }
 
 function resetQuiz() {
-    stopTime();
+
     resetTimer();
 
     quizQuestions = null;
@@ -236,29 +247,27 @@ function resetQuiz() {
 function endQuiz() {
     mainEl.textContent = '';
 
-    stopTime();                                 // ? stop the interval
-    quizQuestions = null;                       // ? remove parsed arrays
-    quizAnswers - null;
+    resetQuiz()
 
-    var affirmations = ['Keep it up, pal!', 'You\'re doing great!', 'I bet you could do this with your eyes closed!', 'I\'m sure everyone would be impressed if they saw you take this quiz!', 'Steve Jobs? Is that you?!', 'Excelsior!']
+    let affirmations = ['Keep it up, pal!', 'You\'re doing great!', 'I bet you could do this with your eyes closed!', 'I\'m sure everyone would be impressed if they saw you take this quiz!', 'Steve Jobs? Is that you?!', 'Excelsior!']
 
-    var title = document.createElement('h1');
+    let title = document.createElement('h1');
     title.textContent = 'Quiz Over!';
 
-    var results = document.createElement('p');
-    results.textContent = 'You scored ' + secondsLeft + ' points. ' + affirmations[randomNumber(affirmations.length)];
+    let results = document.createElement('p');
+    results.textContent = `You scored ${secondsLeft} points. ${affirmations[randomNumber(affirmations.length)]}`;
 
-    var enterInitials = document.createElement('p');
+    let enterInitials = document.createElement('p');
     enterInitials.textContent = 'Please enter your initials:'
     enterInitials.classList.add('enter-initials')
 
-    var initialsInput = document.createElement('input');
+    let initialsInput = document.createElement('input');
     initialsInput.classList.add('initials-input');
     initialsInput.setAttribute('id', 'initials-input');
     initialsInput.maxLength = 3;
     initialsInput.size = 4;
 
-    var button = document.createElement('button');
+    let button = document.createElement('button');
     button.textContent = 'Go to Highscores';
 
     button.addEventListener('click', function () {
@@ -275,41 +284,42 @@ function endQuiz() {
     mainEl.appendChild(button);
 };
 
-function printQuestion() {
-    if (quizQuestions.length === 0) {       // ? check if there are any remaining questions
-        mainEl.textContent = '';
-        return endQuiz();                   // ? if false, end the quiz
+function renderQuestion() {
+    // check if there are any remaining questions
+    if (quizQuestions.length === null || quizQuestions.length === 0) {
+        return endQuiz();            
     }
 
-    randomNum = randomNumber(quizQuestions.length); // ? generate a random number based on the number of questions available
+    mainEl.textContent = '';
 
-    mainEl.textContent = '';                // ? clear the screen
+    // generate a random number based on the number of questions available
+    randomNum = randomNumber(quizQuestions.length); 
 
-    var card = document.createElement('div');
+    let card = document.createElement('div');
     card.classList.add('card');
 
-    var icon = document.createElement('i');
+    let icon = document.createElement('i');
     icon.classList.add('fas');
     icon.classList.add('fa-question-circle');
     icon.classList.add('fa-4x');
-
     card.appendChild(icon);
 
-    card.appendChild(printQuestionTitle(quizQuestions[randomNum]));
+    card.appendChild(renderQuestionTitle(quizQuestions[randomNum]));
 
-    var answerList = document.createElement('ol');
+    let listOptions = document.createElement('ol');
 
-    for (var i = 0; i < quizAnswers[randomNum].length; i++) {
-        answerList.appendChild(createAnswerChoice(randomNum, i)); // ? print questions depending on how many there are for that question
+    // print questions depending on how many there are for that question
+    for (let i = 0; i < quizAnswers[randomNum].length; i++) {
+        listOptions.appendChild(createAnswerChoice(randomNum, i)); 
     }
 
-    card.appendChild(answerList);
+    card.appendChild(listOptions);
 
     mainEl.appendChild(card);
 }
 
 function createAnswerChoice(randomNum, index) {
-    var answer = document.createElement('li');
+    let answer = document.createElement('li');
 
     answer.classList.add('answer-choice');
     answer.addEventListener('click', checkAnswer);
@@ -320,17 +330,19 @@ function createAnswerChoice(randomNum, index) {
 }
 
 function checkAnswer() {
-    if (this.dataset.answer === 'true') {       // ? check to see if the answer is true or false
-        quizQuestions.splice(randomNum, 1);     // ? remove the question and its corresponding answers from the array
+    // check to see if the answer is correct, then remove it from its array
+    if (this.dataset.answer === 'true') {      
+        quizQuestions.splice(randomNum, 1);     
         quizAnswers.splice(randomNum, 1);
-        this.classList.add('correct');          // ? add correct class for pseudo element
+        this.classList.add('correct'); 
 
-        setTimeout(printQuestion, 500);        // ? print the next question
+        setTimeout(renderQuestion, 500);
 
     } else {
+        // notify user of wrong answer, then add 15 second penalty
         if (!this.textContent.endsWith('❌')) {
-            this.textContent = this.textContent + ' ' + '❌'; // ? add an 'x' signifying a wrong answer
-            secondsLeft -= 15;                        // ? add a 15 second penalty to the timer
+            this.textContent = `${this.textContent} ❌`;
+            secondsLeft -= 15;                        
         }
     }
 }
@@ -340,26 +352,19 @@ function initializeTimer() {
     secondsLeft = 75;
 
    if (!timerInterval) {
-        timerInterval = setInterval(startTime, 1000);
+        timerInterval = setInterval(function() {
+            secondsLeft--;
+    
+            if(secondsLeft <= 0) {
+                secondsLeft = 0;
+                clearInterval(timerInterval);
+                timerInterval = null;
+                endQuiz();
+            }
+
+            timerEl.textContent = secondsLeft;
+        }, 1000);
     }
-}
-
-function startTime() {
-    secondsLeft--;
-    timerEl.textContent = secondsLeft;
-
-    if(secondsLeft <= 0) {
-        stopTime();
-        secondsLeft = 0;
-        timerEl.textContent = secondsLeft;
-        timerInterval = null;
-        endQuiz();
-    }
-}
-
-function stopTime() {
-    clearInterval(timerInterval);
-    timerInterval = null;
 }
 
 function resetTimer() {
@@ -372,15 +377,16 @@ function randomNumber(max) {
     return Math.floor(Math.random() * max);
 }
 
-function printTitle(titleContent) {
-    var title = document.createElement('h1');
+function renderTitle(titleContent) {
+    let title = document.createElement('h1');
     title.textContent = titleContent;
     title.classList.add('page-title');
+
     mainEl.appendChild(title);
 }
 
-function printQuestionTitle(titleContent) {
-    var title = document.createElement('h2');
+function renderQuestionTitle(titleContent) {
+    let title = document.createElement('h2');
     title.textContent = titleContent;
     title.classList.add('question-title');
 
