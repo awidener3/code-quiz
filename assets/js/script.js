@@ -1,31 +1,18 @@
-// !DOCUMENT SELECTORS
+// DOCUMENT SELECTORS
 let startBtn = document.querySelector('#start-button');
 let timerEl = document.querySelector('#timer');
 let mainEl = document.querySelector('#main');
 let homeLi = document.querySelector('#home-link');
 let highscoreLi = document.querySelector('#highscore-link')
 
-// !GLOBAL VARIABLES
+// GLOBAL VARIABLES
 let timerInterval;
 let secondsLeft;
 let quizSelection;
 let quizQuestions;
 let quizAnswers;
 
-const questions = [
-    'question 1',
-    'question 2',
-    'question 3',
-    'question 4'
-];
-const answers = [
-    [['Q1 answer 1', true], ['Q1 answer 2', false], ['Q1 answer 3', false], ['Q1 answer 4', false]],
-    [['Q2 answer 1', false], ['Q2 answer 2', true], ['Q2 answer 3', false], ['Q2 answer 4', false]],
-    [['Q3 answer 1', false], ['Q3 answer 2', false], ['Q3 answer 3', true], ['Q3 answer 4', false]],
-    [['Q4 answer 1', false], ['Q4 answer 2', false], ['Q4 answer 3', false], ['Q4 answer 4', true]],
-];
-
-// !HTML QUIZ
+// HTML QUIZ
 const htmlQuestions = [
     'What does HTML stand for?',
     'The <title> element must be located inside...',
@@ -36,7 +23,6 @@ const htmlQuestions = [
     'Which of the following HTML tags is NOT valid?',
     'Which of the following is NOT an HTML attribute?',
     'What HTML form input must be used to present multiple options, but select only one?',
-
 ];
 const htmlAnswers = [
     [['Hyper Text Markup Language', true], ['Hot Mail', false], ['How to Make Lasagna', false]],
@@ -50,7 +36,7 @@ const htmlAnswers = [
     [['<input type="text">', false], ['<input type="radio">', true], ['<input type="checkbox">', false]],
 ];
 
-// !CSS QUIZ
+// CSS QUIZ
 const cssQuestions = [
     'Which CSS selector would we use if we wanted to define a style for a unique element?',
     'What does CSS stand for?',
@@ -61,6 +47,7 @@ const cssQuestions = [
     'Which property is used to change the background color?',
     'Which CSS property controls the text size?'
 ];
+
 const cssAnswers = [
     [['id', true], ['text', false], ['class', false]],
     [['Cascading Style Sheets', true], ['Computer Style Sheets', false], ['Colorful Style Sheets', false], ['Creative Style Sheets', false]],
@@ -71,7 +58,8 @@ const cssAnswers = [
     [['background-color', true], ['bgcolor', false], ['color', false]],
     [['text-size', false], ['font-size', true], ['text-style', false], ['font-style', false]]
 ];
-// !JS QUIZ
+
+// JS QUIZ
 const javascriptQuestions = [
     'Inside which HTML element do we put the JavaScript?',
     'Where is the correct place to insert JavaScript?',
@@ -83,6 +71,7 @@ const javascriptQuestions = [
     'How do you write an IF statement for executing some code if "i" is NOT equal to 5?',
     'How can you add a comment in JavaScript?'
 ];
+
 const javascriptAnswers = [
     [['<scripting>', false], ['<javascript>', false], ['<script>', true], ['<js>', false]],
     [['Both the <head> section and the <body> section are correct', true], ['The <body> section', false], ['The <head> section', false]],
@@ -100,8 +89,7 @@ function init() {
     renderHome();
 }
 
-// !NAVBAR //
-// ----------------------------------------------------------- //
+// NAVBAR //
 homeLi.addEventListener('click', renderHome);
 highscoreLi.addEventListener('click', renderScoreboard);
 
@@ -130,8 +118,7 @@ function resetTimer() {
     timerEl.textContent = secondsLeft;
 }
 
-// !HOMEPAGE RENDERING //
-// ----------------------------------------------------------- //
+// HOMEPAGE RENDERING //
 function renderHome() {
     resetQuiz();
     // check if timer is initialized
@@ -159,10 +146,6 @@ function renderHome() {
     categorySelect.appendChild(createChoice('CSS Basics'));
     categorySelect.appendChild(createChoice('JavaScript Basics'));
 
-    //!TESTING
-    // categorySelect.appendChild(createChoice('Testing'));
-    //!
-
     categoryDiv.appendChild(categoryLabel);
     categoryDiv.appendChild(categorySelect);
 
@@ -182,8 +165,7 @@ function createChoice(choiceName) {
     return choice;
 }
 
-// !HIGHSCORE PAGE RENDERING //
-// ----------------------------------------------------------- //
+// HIGHSCORE PAGE RENDERING
 function renderScoreboard() {
     mainEl.textContent = '';
     resetQuiz();
@@ -260,8 +242,7 @@ function addHighScore() {
     localStorage.setItem('scoreboard', JSON.stringify(scoreboard));
 }
 
-// !QUIZ RENDERING + HANDLING//
-// ----------------------------------------------------------- //
+// QUIZ RENDERING + HANDLING
 
 // sets questions based on home selection, starts timer, and prints the first question
 function startQuiz() {
@@ -404,7 +385,7 @@ function checkAnswer() {
     }
 }
 
-// !UTILITY
+// UTILITY
 function randomNumber(max) {
     return Math.floor(Math.random() * max);
 }
